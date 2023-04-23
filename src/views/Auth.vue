@@ -1,4 +1,7 @@
 <script lang="ts">
+
+import userServices from '../services/userServices'
+
 export default {
     name: "Auth",
     data() {
@@ -9,8 +12,11 @@ export default {
         }
     },
     methods: {
-        onSignUp: async () => {
-
+        async onSignUp() {
+            if (this.email !== '') {
+                const resp = await userServices.signUp(this.email, this.password);
+                // to continue
+            }
         },
         async onLogin() {
             console.log('email', ' ', this.email)
@@ -47,6 +53,9 @@ export default {
                 <font-awesome-icon :icon="['fas', 'eye-slash']" />
             </i>
         </div>
+        <button class="submit button" @click="onSignUp">
+            Sign Up
+        </button>
         <button class="submit button" @click="onLogin">
             Log in
         </button>
