@@ -1,17 +1,14 @@
 import axios from "axios";
-import dotenv from "dotenv";
 
-dotenv.config();
+const BASE_API  = "http://localhost:4000"
 
-const BASE_API  = process.env.BASE_API
-
-export default {
+class userServices {
     signUp(email:string, password:string) {
         return axios.post(BASE_API + "/auth/signUp", {
             email: email,
             password: password
         });
-    },
+    }
 
     login(email: string, password: string) {
         return axios.post(BASE_API + "/auth/login", {
@@ -20,3 +17,5 @@ export default {
         });
     }
 }
+
+export default new userServices();

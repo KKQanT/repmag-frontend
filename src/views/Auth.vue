@@ -1,6 +1,7 @@
 <script lang="ts">
 
 import userServices from '../services/userServices'
+import { createToast } from 'mosha-vue-toastify';
 
 export default {
     name: "Auth",
@@ -15,12 +16,17 @@ export default {
         async onSignUp() {
             if (this.email !== '') {
                 const resp = await userServices.signUp(this.email, this.password);
-                // to continue
+                if (resp.status === 200) {
+                    createToast("Sign Up successfully")
+                } else {
+                    alert("error"  + resp.status + " : " + resp.data.message);
+                }
             }
         },
         async onLogin() {
-            console.log('email', ' ', this.email)
-            console.log('password', ' ', this.password)
+            console.log('email', ' ', this.email);
+            console.log('password', ' ', this.password);
+            createToast('Wow, easy')
         },
 
         viewPassword() {
@@ -53,13 +59,11 @@ export default {
                 <font-awesome-icon :icon="['fas', 'eye-slash']" />
             </i>
         </div>
-        <button class="submit button" @click="onSignUp">
+        <button  @click="onSignUp">
             Sign Up
         </button>
-        <button class="submit button" @click="onLogin">
+        <button  @click="onLogin">
             Log in
         </button>
     </div>
 </template>
-
-<style></style>
