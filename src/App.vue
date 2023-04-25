@@ -13,12 +13,27 @@ export default {
 
   data() {
     return {
-      alreadyLoggedIn: false
+      alreadyLoggedIn: false,
+      userInfo: {
+        name: "",
+        gender: "",
+        interestedIn: "",
+      }
     }
   },
 
   mounted() {
     this.checkLogInStatus();
+  },
+
+  watch: {
+    //setUserProfile
+    alreadyLoggedIn(newVal: boolean, oldVal: boolean) {
+      if (newVal || oldVal) {
+        console.log('alreadyLoggedIn is true');
+        // to continue
+      } 
+    }
   },
 
   methods: {
