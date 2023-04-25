@@ -2,6 +2,7 @@
 
 import userServices from '../services/userServices'
 import { createToast } from 'mosha-vue-toastify';
+import { notifyError } from "./../utils";
 
 export default {
     name: "Auth",
@@ -19,14 +20,19 @@ export default {
                 if (resp.status === 200) {
                     createToast("Sign Up successfully")
                 } else {
-                    alert("error"  + resp.status + " : " + resp.data.message);
+                    notifyError(resp);
                 }
             }
         },
         async onLogin() {
-            console.log('email', ' ', this.email);
-            console.log('password', ' ', this.password);
-            createToast('Wow, easy')
+            const resp = await userServices.login(this.email, this.password);
+            if (resp.status === 200) {
+                const bearerToken = resp.data.bearerToken;
+                window.localStorage.setItem("bearerToken", bearerToken);
+                this.$emit("emittedLoggedIn", true);
+            } else {
+                notifyError(resp)
+            }
         },
 
         viewPassword() {
@@ -59,10 +65,10 @@ export default {
                 <font-awesome-icon :icon="['fas', 'eye-slash']" />
             </i>
         </div>
-        <button  @click="onSignUp">
+        <button @click="onSignUp">
             Sign Up
         </button>
-        <button  @click="onLogin">
+        <button @click="onLogin">
             Log in
         </button>
     </div>

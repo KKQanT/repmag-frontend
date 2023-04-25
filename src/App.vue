@@ -13,17 +13,21 @@ export default {
 
   data() {
     return {
-      pageStage: pageStage.Auth
+      alreadyLoggedIn: false
     }
   },
 
-  created() {
-
+  mounted() {
+    this.checkLogInStatus();
   },
 
   methods: {
-    checkHasJWT : async () => {
-      
+    checkLogInStatus() {
+      const bearerToken = window.localStorage.getItem("bearerToken");
+      if (bearerToken) {
+        console.log('foung bearer:' + bearerToken)
+        this.alreadyLoggedIn = true
+      }
     }
   }
 }
@@ -32,6 +36,13 @@ export default {
 
 <template>
   <div id="app">
-    <Auth/>
+    <div v-if="!alreadyLoggedIn">
+      <Auth @emittedLoggedIn="(value) => alreadyLoggedIn = value"/>
+    </div>
+    <div v-else>
+      <div>
+        You have logged in
+      </div>
+    </div>
   </div>
 </template>
