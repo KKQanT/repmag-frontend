@@ -1,6 +1,16 @@
-const PageStatus= Object.freeze({
-    Auth: "auth",
-    Loading: "loading",
-});
+enum PageStatus {
+    Loading = "loading",
+    Auth = "auth",
+    InputProfile = "inputProfile",
+    Swipping = "swipping"
 
-export default PageStatus;
+}
+
+enum GenderEnum {
+    Man = "Man",
+    Woman = "Woman",
+    Transgender = "Transgender",
+    NonBinary = "Non-Binary",
+}
+
+export { PageStatus, GenderEnum };

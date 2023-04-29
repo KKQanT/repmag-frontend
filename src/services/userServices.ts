@@ -1,4 +1,6 @@
 import axios from "axios";
+import { GenderEnum } from "../types";
+import { getBearerToken } from "../utils";
 
 const BASE_API  = "http://localhost:4000"
 
@@ -15,6 +17,24 @@ class userServices {
             email: email,
             password: password
         });
+    }
+
+    updateUserInfo(
+        name: string, gender: GenderEnum, interestedIn: GenderEnum
+    ) {
+        return axios.post(BASE_API + "/user/updateUserData", {
+            name: name, gender: gender, interestedIn: interestedIn
+        },
+        {
+            headers: {authorization: getBearerToken()}
+        })
+    }
+
+    getSelfProfile() {
+        console.log('run getself')
+        return axios.get(BASE_API + "/user/getSelfProfile", {
+            headers: {authorization: getBearerToken()}
+        })
     }
 }
 

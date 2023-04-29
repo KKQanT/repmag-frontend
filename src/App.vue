@@ -1,19 +1,24 @@
 
 <script lang="ts">
 
-import pageStage from "./types";
+import userServices from "./services/userServices";
+import { PageStatus } from "./types";
+import { getBearerToken, notifyError } from "./utils";
 import Auth from "./views/Auth.vue";
+import InputProfilePage from "./views/InputProfilePage.vue";
 
 export default {
 
   name: "App",
   components: {
-    Auth
+    Auth,
+    InputProfilePage
   },
 
   data() {
     return {
-      alreadyLoggedIn: false,
+      loginSignal: false as boolean,
+      pageStatus: PageStatus.Auth as PageStatus,
       userInfo: {
         name: "",
         gender: "",
@@ -23,27 +28,56 @@ export default {
   },
 
   mounted() {
-    this.checkLogInStatus();
+    this.checkPageStatus();
   },
 
   watch: {
     //setUserProfile
-    alreadyLoggedIn(newVal: boolean, oldVal: boolean) {
+    loginSignal(newVal: boolean, oldVal: boolean) {
       if (newVal || oldVal) {
-        console.log('alreadyLoggedIn is true');
-        // to continue
-      } 
+        console.log('run watch')
+        this.checkPageStatus();
+      }
     }
   },
 
+  //user1@gmail.com
+  //password
+
   methods: {
-    checkLogInStatus() {
-      const bearerToken = window.localStorage.getItem("bearerToken");
+
+    async checkPageStatus() {
+      const bearerToken = getBearerToken();
       if (bearerToken) {
-        console.log('foung bearer:' + bearerToken)
-        this.alreadyLoggedIn = true
+        const userData = await this.getUserProfile();
+        if (userData) {
+          this.userInfo = {
+            name: userData.name,
+            gender: userData.gender,
+            interestedIn: userData.interestedIn
+          }
+          if (!userData.name || !userData.gender || !userData.interestedIn) { 
+            this.pageStatus = PageStatus.InputProfile 
+          } else {
+            this.pageStatus = PageStatus.Swipping
+          }
+        }
+      } else {
+        this.pageStatus = PageStatus.Auth;
+      }
+    },
+
+    async getUserProfile() {
+      const resp = await userServices.getSelfProfile();
+      if (resp.status === 200) {
+        return resp.data
+      } else {
+        notifyError(resp);
       }
     }
+
+    //to continue
+
   }
 }
 
@@ -51,13 +85,8 @@ export default {
 
 <template>
   <div id="app">
-    <div v-if="!alreadyLoggedIn">
-      <Auth @emittedLoggedIn="(value) => alreadyLoggedIn = value"/>
-    </div>
-    <div v-else>
-      <div>
-        You have logged in
-      </div>
-    </div>
+    <Auth @emittedLoggedIn="(value) => loginSignal = value" v-if='pageStatus === "auth"' />
+    <InputProfilePage @emittedPageStatus="(value) => pageStatus = value" v-else-if='pageStatus === "inputProfile"'/>
+    <div v-else-if='pageStatus === "swipping"'>swipping page</div>
   </div>
 </template>
