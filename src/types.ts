@@ -7,10 +7,15 @@ enum PageStatus {
 }
 
 enum GenderEnum {
-    Man = "Man",
-    Woman = "Woman",
-    Transgender = "Transgender",
-    NonBinary = "Non-Binary",
+    Man = "man",
+    Woman = "woman",
 }
 
-export { PageStatus, GenderEnum };
+interface PreferencesType {
+    gender: GenderEnum | null,
+    ageRange: {min: number | null, max: number|null} | null,
+    universities: string[] | null,
+    occupations: string[] | null
+}
+
+export { PageStatus, GenderEnum, type PreferencesType };

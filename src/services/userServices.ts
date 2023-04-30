@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GenderEnum } from "../types";
+import { GenderEnum, PreferencesType } from "../types";
 import { getBearerToken } from "../utils";
 
 const BASE_API  = "http://localhost:4000"
@@ -20,10 +20,20 @@ class userServices {
     }
 
     updateUserInfo(
-        name: string, gender: GenderEnum, interestedIn: GenderEnum
+        name: string, 
+        gender: GenderEnum, 
+        university: string,
+        age: number,
+        occupation: string,
+        preferences: PreferencesType
     ) {
         return axios.post(BASE_API + "/user/updateUserData", {
-            name: name, gender: gender, interestedIn: interestedIn
+            name: name, 
+            gender: gender, 
+            university: university,
+            age: age,
+            occupation: occupation,
+            preferences: preferences
         },
         {
             headers: {authorization: getBearerToken()}
