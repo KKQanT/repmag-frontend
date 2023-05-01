@@ -2,18 +2,24 @@
 <script lang="ts">
 
 import userServices from "./services/userServices";
-import { PageStatus } from "./types";
+import { PageStatus, OtherUsers } from "./types";
 import { getBearerToken, notifyError } from "./utils";
 import Auth from "./views/Auth.vue";
 import InputProfilePage from "./views/InputProfilePage.vue";
+import ChatRoom from "./views/ChatRoom.vue";
+import socket from "./socket";
+import matchServices from "./services/matchedServices";
+import Swipping from "./views/Swipping.vue"
 
 export default {
 
   name: "App",
   components: {
     Auth,
-    InputProfilePage
-  },
+    InputProfilePage,
+    Swipping,
+    ChatRoom
+},
 
   data() {
     return {
@@ -22,8 +28,11 @@ export default {
       userInfo: {
         name: "",
         gender: "",
-        interestedIn: "",
-      }
+        age: null,
+        occupation: null,
+        university: null
+      },
+      recommendsUsers: [] as OtherUsers[],
     }
   },
 
@@ -54,12 +63,22 @@ export default {
           this.userInfo = {
             name: userData.name,
             gender: userData.gender,
-            interestedIn: userData.interestedIn
+            age: userData.age,
+            occupation: userData.occupation,
+            university: userData.university
           }
-          if (!userData.name || !userData.gender || !userData.interestedIn) { 
+          if (!userData.name || !userData.gender) { 
             this.pageStatus = PageStatus.InputProfile 
           } else {
-            this.pageStatus = PageStatus.Swipping
+            //get users for swipping
+            console.log("run");
+            const respA = await userServices.getRecomendedUsers();
+            if (respA.status === 200) {
+              this.recommendsUsers = respA.data;
+            }
+            this.pageStatus = PageStatus.Swipping;
+            socket.auth = {bearerToken: bearerToken};
+            socket.connect();
           }
         }
       } else {
@@ -74,11 +93,8 @@ export default {
       } else {
         notifyError(resp);
       }
-    }
-
-    //to continue
-
-  }
+    },
+  },
 }
 
 </script>
@@ -87,6 +103,6 @@ export default {
   <div id="app">
     <Auth @emittedLoggedIn="(value) => loginSignal = value" v-if='pageStatus === "auth"' />
     <InputProfilePage @emittedPageStatus="(value) => pageStatus = value" v-else-if='pageStatus === "inputProfile"'/>
-    <div v-else-if='pageStatus === "swipping"'>swipping page</div>
+    <Swipping v-else-if="pageStatus==='swipping'" :recommended-users-props="recommendsUsers"/>
   </div>
 </template>

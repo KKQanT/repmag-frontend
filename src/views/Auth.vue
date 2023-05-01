@@ -57,7 +57,7 @@ export default {
             <div class="label">Email</div>
             <input type="text" v-model="email" placeholder="user@gmail.com">
             <div class="label" Password>Password</div>
-            <input :type="hidePasswordInput" v-model="password" placeholder="user@gmail.com">
+            <input :type="hidePasswordInput" v-model="password" placeholder="user@gmail.com" @keyup.enter="onLogin">
             <i v-if="hidePassword" @click="viewPassword">
                 <font-awesome-icon :icon="['fas', 'eye']" />
             </i>

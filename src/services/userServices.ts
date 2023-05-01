@@ -46,6 +46,14 @@ class userServices {
             headers: {authorization: getBearerToken()}
         })
     }
+
+    getRecomendedUsers(){
+        return axios.get(BASE_API + "/user/getRecommendedUsers", {
+            headers: {authorization: getBearerToken()}
+        })
+    }
+
+    
 }
 
 export default new userServices();
