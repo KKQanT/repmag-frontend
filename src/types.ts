@@ -35,10 +35,18 @@ interface OtherUsers {
     _id: string
 }
 
+enum MatchingStatus {
+    await = "await",
+    matched="matched",
+    pass="pass",
+    unmatched="unmatched"
+}
+
 export {
     PageStatus,
     GenderEnum,
     type PreferencesType,
     type PrivateMessageArgs,
-    type OtherUsers
+    type OtherUsers,
+    MatchingStatus
 };

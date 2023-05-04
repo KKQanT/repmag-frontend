@@ -10,6 +10,11 @@ import ChatRoom from "./views/ChatRoom.vue";
 import socket from "./socket";
 import matchServices from "./services/matchedServices";
 import Swipping from "./views/Swipping.vue"
+import { createToast } from "mosha-vue-toastify";
+
+interface MatchNotifyData {
+  name: string
+}
 
 export default {
 
@@ -19,7 +24,7 @@ export default {
     InputProfilePage,
     Swipping,
     ChatRoom
-},
+  },
 
   data() {
     return {
@@ -47,11 +52,14 @@ export default {
         console.log('run watch')
         this.checkPageStatus();
       }
+    },
+
+    pageStatus(newVal: string, oldVal: string) {
+      if ((oldVal === PageStatus.InputProfile) && (newVal === PageStatus.Swipping)) {
+        this.getRecommendedUsers()
+      }
     }
   },
-
-  //user1@gmail.com
-  //password
 
   methods: {
 
@@ -67,17 +75,14 @@ export default {
             occupation: userData.occupation,
             university: userData.university
           }
-          if (!userData.name || !userData.gender) { 
-            this.pageStatus = PageStatus.InputProfile 
+          if (!userData.name || !userData.gender) {
+            this.pageStatus = PageStatus.InputProfile
           } else {
             //get users for swipping
             console.log("run");
-            const respA = await userServices.getRecomendedUsers();
-            if (respA.status === 200) {
-              this.recommendsUsers = respA.data;
-            }
+            await this.getRecommendedUsers();
             this.pageStatus = PageStatus.Swipping;
-            socket.auth = {bearerToken: bearerToken};
+            socket.auth = { bearerToken: bearerToken };
             socket.connect();
           }
         }
@@ -94,7 +99,26 @@ export default {
         notifyError(resp);
       }
     },
+
+    async getRecommendedUsers() {
+      const resp = await userServices.getRecomendedUsers();
+      if (resp.status === 200) {
+        this.recommendsUsers = resp.data;
+      }
+    }
   },
+
+  created() {
+    socket.on("match notify", (data: MatchNotifyData) => {
+      const partnerName = data.name;
+      createToast(`${partnerName} has liked you back!`)
+    }),
+
+    socket.on("liked notify", (_data: MatchNotifyData) => {
+      console.log("liked notify invoked")
+      createToast(`someone has liked you`)
+    })
+  }
 }
 
 </script>
@@ -102,7 +126,7 @@ export default {
 <template>
   <div id="app">
     <Auth @emittedLoggedIn="(value) => loginSignal = value" v-if='pageStatus === "auth"' />
-    <InputProfilePage @emittedPageStatus="(value) => pageStatus = value" v-else-if='pageStatus === "inputProfile"'/>
-    <Swipping v-else-if="pageStatus==='swipping'" :recommended-users-props="recommendsUsers"/>
+    <InputProfilePage @emittedPageStatus="(value) => pageStatus = value" v-else-if='pageStatus === "inputProfile"' />
+    <Swipping v-else-if="pageStatus === 'swipping'" :recommended-users-props="recommendsUsers" />
   </div>
 </template>
