@@ -40,7 +40,6 @@ export default {
                     universities: this.preferUiversities,
                     occupations: this.preferOccupations
                 }
-                console.log(this.name, this.gender, this.university, this.age, this.occupation, this.preferences)
                 const resp = await userServices.updateUserInfo(
                     this.name, this.gender, this.university, this.age,
                     this.occupation, this.preferences

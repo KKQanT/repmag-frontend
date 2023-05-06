@@ -3,7 +3,7 @@ enum PageStatus {
     Auth = "auth",
     InputProfile = "inputProfile",
     Swipping = "swipping",
-    MatchedSelection = "matchSelection",
+    MatchedList = "matchedList",
     Chatroom = "chatroom"
 }
 
@@ -22,17 +22,17 @@ interface PreferencesType {
 interface PrivateMessageArgs {
     message: string,
     fromSocketID: string,
-    toUserID: string
+    toUserID: string,
+    fromUserID: string
 }
 
-interface OtherUsers {
+interface OtherUser {
     age: number,
     gender: GenderEnum | null,
     name: string,
     occupation: string,
     university: string,
     userID: string,
-    _id: string
 }
 
 enum MatchingStatus {
@@ -47,6 +47,6 @@ export {
     GenderEnum,
     type PreferencesType,
     type PrivateMessageArgs,
-    type OtherUsers,
+    type OtherUser,
     MatchingStatus
 };

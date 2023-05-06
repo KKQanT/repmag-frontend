@@ -24,7 +24,6 @@ export default {
                     //emit match status
                     socket.emit("match notify", { targetUserID: targetUserID })
                 } else if (result === "liked") {
-                    console.log('emit liked')
                     socket.emit("liked notify", { targetUserID: targetUserID })
                 }
             }
@@ -45,7 +44,7 @@ export default {
                     object.splice(index, 1)
                 }
             });
-        }
+        },
     },
 }
 </script>

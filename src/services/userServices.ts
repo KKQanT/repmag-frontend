@@ -41,7 +41,6 @@ class userServices {
     }
 
     getSelfProfile() {
-        console.log('run getself')
         return axios.get(BASE_API + "/user/getSelfProfile", {
             headers: {authorization: getBearerToken()}
         })

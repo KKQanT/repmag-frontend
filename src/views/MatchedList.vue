@@ -1,15 +1,23 @@
 <script lang="ts">
-import socket from '../socket';
+import { OtherUser } from '../types';
 
 export default {
     name: "MatchedList",
     props: {
-        mathcedList: {}   
+        mathcedListProps: Array<OtherUser>
     },
-    
-    mounted() {
 
+    methods: {
+        selectUser(userInfo: OtherUser) {
+            this.$emit("emittedSelectedUserToChat", userInfo)
+        }
     }
 }
 
 </script>
+
+<template>
+    <div v-for="userInfo in mathcedListProps">
+        <div @click="() => selectUser(userInfo)">{{ userInfo.name }}</div>
+    </div>
+</template>
