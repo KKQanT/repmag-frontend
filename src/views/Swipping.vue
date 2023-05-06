@@ -2,13 +2,13 @@
 import userServices from "../services/userServices";
 import matchService from "../services/matchedServices";
 import { notifyError } from "./../utils";
-import { OtherUsers, MatchingStatus } from "../types";
+import { OtherUser, MatchingStatus } from "../types";
 import socket from "../socket";
 
 export default {
     name: "Swipping",
     props: {
-        recommendedUsersProps: Array<OtherUsers>
+        recommendedUsersProps: Array<OtherUser>
     },
     data() {
         return {
@@ -38,7 +38,7 @@ export default {
 
         removeUserCard(userID: string) {
             this.recommendedUsersProps?.forEach((
-                item: OtherUsers, index: number, object: OtherUsers[]
+                item: OtherUser, index: number, object: OtherUser[]
             ) => {
                 if (item.userID === userID) {
                     object.splice(index, 1)
