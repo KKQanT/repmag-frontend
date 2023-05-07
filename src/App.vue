@@ -14,6 +14,7 @@ import { createToast } from "mosha-vue-toastify";
 import MatchedList from "./views/MatchedList.vue";
 import chatServices from "./services/chatServices";
 import { data } from "jquery";
+import Loading from "./views/Loading.vue";
 
 interface MatchNotifyData {
   name: string
@@ -27,7 +28,8 @@ export default {
     InputProfilePage,
     Swipping,
     MatchedList,
-    ChatRoom
+    ChatRoom,
+    Loading
   },
 
   data() {
@@ -51,7 +53,7 @@ export default {
   },
 
   mounted() {
-    this.setUpPage();
+    this.setUpPageWithLoading();
   },
 
   watch: {
@@ -103,102 +105,119 @@ export default {
       }
     },
 
+    async setUpPageWithLoading() {
+      try {
+        this.switchPage(PageStatus.Loading);
+        await this.setUpPage()
+      } catch (err) {
+        console.log(err)
+        this.switchPage(PageStatus.Auth);
+      }
+    },
+  
     async getUserProfile() {
-      const resp = await userServices.getSelfProfile();
-      if (resp.status === 200) {
-        return resp.data
-      } else {
-        notifyError(resp);
-      }
-    },
+    const resp = await userServices.getSelfProfile();
+    if (resp.status === 200) {
+      return resp.data
+    } else {
+      notifyError(resp);
+    }
+  },
 
-    async getRecommendedUsers() {
-      const resp = await userServices.getRecomendedUsers();
-      if (resp.status === 200) {
-        this.recommendsUsers = resp.data;
-      }
-    },
+  async getRecommendedUsers() {
+    const resp = await userServices.getRecomendedUsers();
+    if (resp.status === 200) {
+      this.recommendsUsers = resp.data;
+    }
+  },
 
-    async getMatchedAndChatHistory() {
-      
-      const respA = await matchServices.getMatched();
-      
-      if (respA.status === 200) {
-        this.matchedUser = respA.data
-        
-        for (const item of this.matchedUser) {
-          this.matchedUserMap.set(item.userID, item)
-          const respB = await chatServices.getChatHistory(item.userID)
-          this.inMemoryCacheChat.set(item.userID, []);
-          
-          if (respB.status === 200 && respB.data.length > 0) {
-            let messages = this.inMemoryCacheChat.get(item.userID);
-            
-            for (const messageData of respB.data) {
-              messages.push({
-                message: messageData.message,
-                time: messageData.createdAt,
-                senderID: messageData.fromUserID
-              });
-            }            
+  async getMatchedAndChatHistory() {
+
+    const respA = await matchServices.getMatched();
+
+    if (respA.status === 200) {
+      this.matchedUser = respA.data
+
+      for (const item of this.matchedUser) {
+        this.matchedUserMap.set(item.userID, item)
+        const respB = await chatServices.getChatHistory(item.userID)
+        this.inMemoryCacheChat.set(item.userID, []);
+
+        if (respB.status === 200 && respB.data.length > 0) {
+          let messages = this.inMemoryCacheChat.get(item.userID);
+
+          for (const messageData of respB.data) {
+            messages.push({
+              message: messageData.message,
+              time: messageData.createdAt,
+              senderID: messageData.fromUserID
+            });
           }
         }
       }
-    },
-
-    switchPage(pageStatus) {
-      this.pageStatus = pageStatus
-    },
-
-    handleEmittedSelectedUserToChat(value: OtherUser) {
-      this.selectedUserToChat = value;
-      this.switchPage(PageStatus.Chatroom);
-    },
+    }
   },
 
-  created() {
-    socket.on("match notify", (data: MatchNotifyData) => {
-      const partnerName = data.name;
-      createToast(`${partnerName} has liked you back!`)
+  switchPage(pageStatus) {
+    this.pageStatus = pageStatus
+  },
+
+  handleEmittedSelectedUserToChat(value: OtherUser) {
+    this.selectedUserToChat = value;
+    this.switchPage(PageStatus.Chatroom);
+  },
+
+  logout() {
+    localStorage.removeItem("bearerToken");
+    this.switchPage(PageStatus.Auth);
+  }
+},
+
+created() {
+  socket.on("match notify", (data: MatchNotifyData) => {
+    const partnerName = data.name;
+    createToast(`${partnerName} has liked you back!`)
+  }),
+
+    socket.on("liked notify", (_data: MatchNotifyData) => {
+      createToast(`someone has liked you`)
     }),
 
-      socket.on("liked notify", (_data: MatchNotifyData) => {
-        createToast(`someone has liked you`)
-      }),
-
-      socket.on("private message", (data: PrivateMessageArgs) => {
-        const senderID = data.fromUserID;
-        let messages = this.inMemoryCacheChat.get(senderID);
-        messages.push({
-          message: data.message,
-          time: getTime(),
-          senderID: senderID
-        });
-      }),
-
-      socket.on("self private message", (data: PrivateMessageArgs) => {
-        const senderID = data.fromUserID;
-        const toUserID = data.toUserID;
-        let messages = this.inMemoryCacheChat.get(toUserID);
-        messages.push({
-          message: data.message,
-          time: getTime(),
-          senderID: senderID
-        });
+    socket.on("private message", (data: PrivateMessageArgs) => {
+      const senderID = data.fromUserID;
+      let messages = this.inMemoryCacheChat.get(senderID);
+      messages.push({
+        message: data.message,
+        time: getTime(),
+        senderID: senderID
       });
-  }
+    }),
+
+    socket.on("self private message", (data: PrivateMessageArgs) => {
+      const senderID = data.fromUserID;
+      const toUserID = data.toUserID;
+      let messages = this.inMemoryCacheChat.get(toUserID);
+      messages.push({
+        message: data.message,
+        time: getTime(),
+        senderID: senderID
+      });
+    });
+}
 }
 
 </script>
 
 <template>
   <div id="app">
-    <Auth @emittedLoggedIn="(value) => loginSignal = value" v-if='pageStatus === "auth"' />
+    <Loading v-if="pageStatus === 'loading'"/>
+    <Auth @emittedLoggedIn="(value) => loginSignal = value" v-else-if='pageStatus === "auth"' />
     <InputProfilePage @emittedPageStatus="(value) => pageStatus = value" v-else-if='pageStatus === "inputProfile"' />
     <div v-else>
       <div>
         <button @click="() => switchPage('swipping')">Swipping</button>
         <button @click="() => switchPage('matchedList')">MatchedList</button>
+        <button @click="() => logout()">logout</button>
       </div>
       <div>
         <Swipping v-if="pageStatus === 'swipping'" :recommended-users-props="recommendsUsers" />
