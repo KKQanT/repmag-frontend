@@ -1,80 +1,102 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* Global Styles */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+/* Set background color */
+html body {
+  background-color: hsl(0, 0%, 100%);
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
+/* Set font family and size */
 body {
-  margin: 0;
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Set border radius for buttons and input fields */
+button,
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  border-radius: 20px;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
+/* Set box shadow for elements */
+button,
+input[type="text"],
+input[type="email"],
+input[type="password"],
 .card {
-  padding: 2em;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Set primary color for buttons */
+button {
+  background-color: #dfd3c3;
+  color: #fff;
+  border-color: #dfd3c3;
+}
+
+/* Set primary color for links */
+a {
+  color: #d0b8a8;
+}
+
+/* Set background color for forms */
+.box-shadow {
+  background-color: hsla(0, 0%, 97%, 0.9);
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Set background color for cards */
+.card {
+  background-color: hsla(0, 0%, 100%, 0.852);
+}
+
+/* Set background color for input fields */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  background-color: #ffffffea;
+  color: black;
+  padding: 10px;
+  border: none;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Set hover effect for buttons */
+button:hover {
+  background-color: #dfc3b3;
+  border-color: #dfc3b3;
+}
+
+/* Set hover effect for links */
+a:hover {
+  color: #29c102;
+}
+
+/* Set hover effect for cards */
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Set active effect for buttons */
+button:active {
+  background-color: #ff4c4c;
+  border-color: #ff4c4c;
+}
+
+/* Set active effect for links */
+a:active {
+  color: #8822ff;
 }
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  max-width: 800px;
 }
