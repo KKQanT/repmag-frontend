@@ -4,163 +4,150 @@ import userServices from "../services/userServices";
 import { GenderEnum, PreferencesType } from "../types";
 
 export default {
-    name: "InputProfilePage",
-    data() {
-        return {
+  name: "InputProfilePage",
+  data() {
+    return {
 
-            inputProfile: true as boolean,
+      inputProfile: true as boolean,
 
-            name: null as string | null,
-            gender: null as GenderEnum | null,
-            university: null as string | null,
-            age: null as number | null,
-            occupation: null as string | null,
-            
-            preferences: null as PreferencesType | null,
-            preferGender: null as GenderEnum | null,
-            minPreferAge: null as number | null,
-            maxPreferAge: null as number | null,
-            preferUiversities: [] as string[],
-            preferOccupations: [] as string[],
+      name: null as string | null,
+      gender: null as GenderEnum | null,
+      university: null as string | null,
+      age: null as number | null,
+      occupation: null as string | null,
 
-            preferUniversity: null as string | null,
-            preferOccupation: null as string | null
+      preferences: null as PreferencesType | null,
+      preferGender: null as GenderEnum | null,
+      minPreferAge: null as number | null,
+      maxPreferAge: null as number | null,
+      preferUiversities: [] as string[],
+      preferOccupations: [] as string[],
+
+      preferUniversity: null as string | null,
+      preferOccupation: null as string | null
+    }
+  },
+
+  methods: {
+    async onSubmit() {
+      if (
+        this.name && this.gender && this.university &&
+        this.age && this.occupation
+      ) {
+        this.preferences = {
+          gender: this.preferGender,
+          ageRange: { min: this.minPreferAge, max: this.maxPreferAge },
+          universities: this.preferUiversities,
+          occupations: this.preferOccupations
         }
+        const resp = await userServices.updateUserInfo(
+          this.name, this.gender, this.university, this.age,
+          this.occupation, this.preferences
+        )
+        this.$emit("emittedPageStatus", "swipping")
+      } else {
+        alert('pls input value')
+      }
     },
 
-    methods: {
-        async onSubmit() {
-            if (
-                this.name && this.gender && this.university &&
-                this.age && this.occupation
-            ) {
-                this.preferences = {
-                    gender: this.preferGender,
-                    ageRange: {min: this.minPreferAge, max: this.maxPreferAge},
-                    universities: this.preferUiversities,
-                    occupations: this.preferOccupations
-                }
-                const resp = await userServices.updateUserInfo(
-                    this.name, this.gender, this.university, this.age,
-                    this.occupation, this.preferences
-                )
-                this.$emit("emittedPageStatus", "swipping")
-            } else {
-                alert('pls input value')
-            }
-        },
+    onAddPreferUniversity() {
+      if (this.preferUniversity) {
+        this.preferUiversities.push(this.preferUniversity);
+        this.preferUniversity = null
+      }
+    },
 
-        onAddPreferUniversity() {
-            if (this.preferUniversity) {
-                this.preferUiversities.push(this.preferUniversity);
-                this.preferUniversity = null
-            }
-        },
+    clearPreferUniversities() {
+      this.preferUiversities = [];
+    },
 
-        clearPreferUniversities() {
-            this.preferUiversities = [];
-        },
+    onAddPreferOccupation() {
+      if (this.preferOccupation) {
+        this.preferOccupations.push(this.preferOccupation);
+        this.preferOccupation = null
+      }
+    },
 
-        onAddPreferOccupation() {
-            if (this.preferOccupation) {
-                this.preferOccupations.push(this.preferOccupation);
-                this.preferOccupation = null
-            }
-        },
-
-        clearPreferOccupations() {
-            this.preferOccupations = [];
-        }
+    clearPreferOccupations() {
+      this.preferOccupations = [];
     }
+  }
 }
 </script>
 
 <template>
-    <div v-if="inputProfile">
-        <div>
-            <div>name</div>
-            <input type="text" v-model="name">
-        </div>
-
-        <div>
-            <div>gender</div>
-            <select v-model="gender">
-                <option>{{ "Man" }}</option>
-                <option>{{ "Woman" }}</option>
+  <div class="container my-5">
+    <div class="row">
+      <div class="col-lg-6 mx-auto">
+        <h3 class="mb-3">Tell us more about yourself</h3>
+        <div v-if="inputProfile">
+          <div class="mb-3">
+            <label for="name" class="form-label">Display Name</label>
+            <input type="text" class="form-control" id="name" v-model="name">
+          </div>
+          <div class="mb-3">
+            <label for="gender" class="form-label">Gender</label>
+            <select class="form-select" id="gender" v-model="gender">
+              <option>Man</option>
+              <option>Woman</option>
             </select>
-        </div>
-
-        <div>
+          </div>
+          <div class="mb-3">
+            <label for="age" class="form-label">Age</label>
+            <input type="number" class="form-control" id="age" v-model="age">
+          </div>
+          <div>
             <div>university</div>
             <input type="text" v-model="university">
+          </div>
+          <div class="mb-3">
+            <label for="occupation" class="form-label">Occupation</label>
+            <input type="text" class="form-control" id="occupation" v-model="occupation">
+          </div>
+          <div class="d-grid gap-2 mt-5">
+            <button class="btn btn-primary" type="button" @click="inputProfile = false">Next</button>
+          </div>
         </div>
-
-        <div>
-            <div>age</div>
-            <input type="number" v-model="age">
-        </div>
-
-        <div>
-            <div>occupation</div>
-            <input type="text" v-model="occupation">
-        </div>
-
-        <div>
-            <button @click="inputProfile = false">
-                next
-            </button>
-        </div>
-
-    </div>
-
-    <div v-else>
-        <div>
-            <div>gender</div>
-            <select v-model="preferGender">
-                <option>{{ "Man" }}</option>
-                <option>{{ "Woman" }}</option>
+        
+        <div v-else>
+          <div class="mb-3">
+            <label for="preferGender" class="form-label">Prefer Gender</label>
+            <select class="form-select" id="preferGender" v-model="preferGender">
+              <option>Man</option>
+              <option>Woman</option>
             </select>
-        </div>
-
-        <div>
-            <div>ageRange</div>
-            <div>
-                <div>min</div>
-                <input type="number" v-model="minPreferAge">
-                <div>max</div>
-                <input type="number" v-model="maxPreferAge">
+          </div>
+          <div class="mb-3">
+            <label for="preferAge" class="form-label">Prefer Age</label>
+            <div class="form-group">
+              <label for="minPreferAge">minimum age</label>
+              <input type="number" id="minPreferAge" v-model="minPreferAge">
+              <label for="maxPreferAge">maximum age</label>
+              <input type="number" id="maxPreferAge" v-model="maxPreferAge">
             </div>
+          </div>
+          <div class="mb-3">
+            <label for="preferUniversities" class="form-label">prefer universities</label>
+            <div class="d-flex align-items-center">
+              <input id="preferUniversities" type="text" v-model="preferUniversity" class="mb-0" />
+              <button class="btn btn-outline-secondary btn-sm ms-2" @click="onAddPreferUniversity">Add</button>
+              <button class="btn btn-outline-secondary btn-sm ms-2" @click="clearPreferUniversities">Clear</button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="preferOccupation" class="form-label">prefer occupations</label>
+            <div id="preferOccupation" class="d-flex align-items-center">
+              <input type="text" v-model="preferOccupation" class="mb-0" />
+              <button class="btn btn-outline-secondary btn-sm ms-2" @click="onAddPreferOccupation">Add</button>
+              <button class="btn btn-outline-secondary btn-sm ms-2" @click="clearPreferOccupations">Clear</button>
+            </div>
+          </div>
+          <div class="d-grid gap-2 mt-5">
+            <button class="btn btn-primary" type="button" @click="onSubmit">Continue</button>
+          </div>
         </div>
 
-        <div v-if="preferUiversities">
-            <div>universities</div>
-            <li v-for="item in preferUiversities" :key="item">{{ item }}</li>
-        </div>
-
-        <div v-if="preferOccupations">
-            <div>occupations</div>
-            <li v-for="item in preferOccupations" :key="item">{{ item }}</li>
-        </div>
-
-        <div>
-            <div>universities</div>
-            <input type="text" v-model="preferUniversity">
-            <button @click="onAddPreferUniversity">add</button>
-            <button @click="clearPreferUniversities">clear</button>
-        </div>
-
-        <div>
-            <div>occupations</div>
-            <input type="text" v-model="preferOccupation">
-            <button @click="onAddPreferOccupation">add</button>
-            <button @click="clearPreferOccupations">clear</button>
-        </div>
-
-        <div>
-            <button @click="onSubmit">
-                submit
-            </button>
-        </div>
-
+      </div>
     </div>
+  </div>
 </template>

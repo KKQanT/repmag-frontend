@@ -35,9 +35,9 @@ input[type="password"],
 
 /* Set primary color for buttons */
 button {
-  background-color: #dfd3c3;
-  color: #fff;
-  border-color: #dfd3c3;
+  background-color: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
 }
 
 /* Set primary color for links */
