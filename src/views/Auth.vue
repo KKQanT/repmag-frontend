@@ -53,31 +53,33 @@ export default {
 </script>
 
 <template>
-  <div class="container justify-content-center align-items-center">
-    <div class="p-5 box-shadow bg-white">
-      <h2 class="mb-4">Welcome to Repmag</h2>
-      <div>
+  <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card" style="width: 18rem;">
+      <div class="p-5 box-shadow bg-white">
+        <h2 class="mb-4">Welcome to Repmag</h2>
         <div>
-          <div class="mb-3">
-            <label for="email" class="form-label">Email address: </label>
-            <input type="text" v-model="email" class="form-control" id="email" placeholder="example@gmail.com">
-          </div>
-          <div class="mb-3">
-            <div class="d-flex justify-content-between">
-              <label for="password" class="form-label">Password: </label>
-              <i v-if="hidePassword" @click="viewPassword">
-                <font-awesome-icon :icon="['fas', 'eye']" />
-              </i>
-              <i v-else @click="viewPassword">
-                <font-awesome-icon :icon="['fas', 'eye-slash']" />
-              </i>
+          <div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email address: </label>
+              <input type="text" v-model="email" class="form-control" id="email" placeholder="example@gmail.com">
             </div>
-            <input v-model="password" class="form-control" :type="hidePassword ? 'password' : 'text'">
-          </div>
-          <button class="btn btn-primary w-100" @click="onLogin">Login</button>
-          <div class="mt-3 text-center">
-            <a>Don't have an account?</a><br>
-            <a href="#" @click="onSignUp">Create account</a>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between">
+                <label for="password" class="form-label">Password: </label>
+                <i v-if="hidePassword" @click="viewPassword">
+                  <font-awesome-icon :icon="['fas', 'eye']" />
+                </i>
+                <i v-else @click="viewPassword">
+                  <font-awesome-icon :icon="['fas', 'eye-slash']" />
+                </i>
+              </div>
+              <input v-model="password" class="form-control" :type="hidePassword ? 'password' : 'text'">
+            </div>
+            <button class="btn btn-primary w-100" @click="onLogin">Login</button>
+            <div class="mt-3 text-center">
+              <a>Don't have an account?</a><br>
+              <a href="#" @click="onSignUp">Create account</a>
+            </div>
           </div>
         </div>
       </div>

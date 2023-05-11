@@ -213,11 +213,23 @@ export default {
   <Auth @emittedLoggedIn="(value) => loginSignal = value" v-else-if='pageStatus === "auth"' />
   <InputProfilePage @emittedPageStatus="(value) => pageStatus = value" v-else-if='pageStatus === "inputProfile"' />
   <div v-else>
-    <div>
-      <button @click="() => switchPage('swipping')">Swipping</button>
-      <button @click="() => switchPage('matchedList')">MatchedList</button>
-      <button @click="() => logout()">logout</button>
-    </div>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Logo</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a type="button" class="nav-link" @click="() => switchPage('swipping')">Swipping</a>
+          </li>
+          <li class="nav-item">
+            <a type="button" class="nav-link" @click="() => switchPage('matchedList')">MatchedList</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
     <div>
       <Swipping v-if="pageStatus === 'swipping'" :recommended-users-props="recommendsUsers" />
       <MatchedList v-else-if="pageStatus === 'matchedList'" :mathced-list-props="matchedUser"
