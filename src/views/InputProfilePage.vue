@@ -76,8 +76,8 @@ export default {
 </script>
 
 <template>
-  <div class="container my-5">
-    <div class="row">
+  <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="row" style="width:50%;">
       <div class="col-lg-6 mx-auto">
         <h3 class="mb-3">Tell us more about yourself</h3>
         <div v-if="inputProfile">
@@ -96,9 +96,9 @@ export default {
             <label for="age" class="form-label">Age</label>
             <input type="number" class="form-control" id="age" v-model="age">
           </div>
-          <div>
-            <div>university</div>
-            <input type="text" v-model="university">
+          <div class="mb-3">
+            <label for="university" class="form-label">university</label>
+            <input type="text" class="form-control" v-model="university" id="university">
           </div>
           <div class="mb-3">
             <label for="occupation" class="form-label">Occupation</label>
