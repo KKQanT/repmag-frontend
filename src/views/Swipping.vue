@@ -4,6 +4,7 @@ import matchService from "../services/matchedServices";
 import { notifyError } from "./../utils";
 import { OtherUser, MatchingStatus } from "../types";
 import socket from "../socket";
+import { faL } from "@fortawesome/free-solid-svg-icons";
 
 export default {
     name: "Swipping",
@@ -12,7 +13,8 @@ export default {
     },
     data() {
         return {
-            selfUserId: "",
+            selectedPartner: null as OtherUser | null,
+            showModal: "none"
         }
     },
     methods: {
@@ -45,18 +47,73 @@ export default {
                 }
             });
         },
+
+        openCard(partner: OtherUser) {
+            console.log(partner)
+            this.selectedPartner = partner;
+            this.showModal = "inline"
+        },
+
+        closeCard() {
+            this.selectedPartner = null;
+            this.showModal = "none";
+        }
     },
 }
 </script>
 
 <template>
-    <div>Swipping page</div>
-    <div v-for="userData in recommendedUsersProps">
-        <div>{{ userData.name }}</div>
-        <div>
-            <button @click="() => likeUser(userData.userID)">like</button>
-            <button @click="() => passUser(userData.userID)">pass</button>
+    <div class="card-list">
+        <div v-for="partner in recommendedUsersProps" :key="partner.userID" class="card" @click="() => openCard(partner)">
+            <img src="/download.jpg" alt="partner img" class="img-fluid">
+            <div class="card-body">
+                <h5 class="card-title">{{ partner.name }}</h5>
+                <p class="card-text">{{ partner.age }}</p>
+            </div>
         </div>
     </div>
+
+    <modal class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ selectedPartner?.name }}</h5>
+                    <button type="button" class="close" @click="closeCard">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img src="/download.jpg" alt="partner img" class="full-card-img">
+                    <p class="full-card-info">Age: {{ selectedPartner?.age }}</p>
+                    <p class="full-card-info">University: {{ selectedPartner?.university }}</p>
+                    <p class="full-card-info">Occupation: {{ selectedPartner?.occupation }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" @click="() => passUser(selectedPartner!.userID)">pass</button>
+                    <button class="btn btn-success" @click="() => likeUser(selectedPartner!.userID)">pass</button>
+                </div>
+            </div>
+        </div>
+    </modal>
 </template>
 
+<style scoped>
+.card-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.card {
+    cursor: pointer;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 10px
+}
+/*since bootraps modal is not working so this section is needed*/
+modal {
+    display: v-bind(showModal);
+}
+
+</style>
