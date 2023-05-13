@@ -63,12 +63,17 @@ export default {
 </script>
 
 <template>
-    <div class="card-list">
-        <div v-for="partner in recommendedUsersProps" :key="partner.userID" class="card" @click="() => openCard(partner)">
-            <img src="/download.jpg" alt="partner img" class="img-fluid">
-            <div class="card-body">
-                <h5 class="card-title">{{ partner.name }}</h5>
-                <p class="card-text">{{ partner.age }}</p>
+    <!--to do solve 4 4 1 issue-->
+
+    <div class="container justify-content-center align-items-center d-flex">
+        <div class="card-list mt-3">
+            <div v-for="partner in recommendedUsersProps" :key="partner.userID" class="card"
+                @click="() => openCard(partner)">
+                <img src="/download.jpg" alt="partner img" class="img-fluid">
+                <div class="card-body">
+                    <h5 class="card-title">{{ partner.name }}</h5>
+                    <p class="card-text">{{ partner.age }}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -103,17 +108,26 @@ export default {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
+    max-width: 80%;
 }
 
 .card {
-    cursor: pointer;
-    width: 200px;
+    flex: 0 0 calc(25% - 20px);
+    /* Adjust the width as needed */
     border: 1px solid #ccc;
-    border-radius: 10px
+    border-radius: 10px;
+    margin-bottom: 20px;
 }
+
+@media (max-width: 768px) {
+    .card {
+        flex: 0 0 calc(50% - 20px);
+        /* Adjust the width for smaller screens */
+    }
+}
+
 /*since bootraps modal is not working so this section is needed*/
 modal {
     display: v-bind(showModal);
 }
-
 </style>
