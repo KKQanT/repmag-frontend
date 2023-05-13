@@ -10,8 +10,10 @@ export default {
     return {
       email: "" as string,
       password: "" as string,
+      confirmPassword: "" as string,
       hidePassword: true as Boolean,
-      showModal: false
+      showModal: false,
+      loginLoading: false,
     }
   },
   methods: {
@@ -25,17 +27,28 @@ export default {
     },
 
     async onSignUp() {
-      if (this.email !== '') {
+      console.log(this.password)
+      console.log(this.confirmPassword)
+      console.log(this.password != this.confirmPassword)
+      if ((this.email !== '') && (this.password === this.confirmPassword)) {
         const resp = await userServices.signUp(this.email, this.password);
         if (resp.status === 200) {
-          createToast("Sign Up successfully")
+          createToast("Sign Up successfully");
+          this.closeModal();
         } else {
           notifyError(resp);
+        }
+      } else {
+        if (this.email == "") {
+          alert('please input your email')
+        } else {
+          alert("password and confirm password not matched")
         }
       }
     },
     async onLogin() {
       console.log('run login')
+      this.loginLoading = true
       const resp = await userServices.login(this.email, this.password);
       if (resp.status === 200) {
         const bearerToken = resp.data.bearerToken;
@@ -44,6 +57,7 @@ export default {
       } else {
         notifyError(resp)
       }
+      this.loginLoading = false
     },
 
     viewPassword() {
@@ -85,7 +99,11 @@ export default {
               </div>
               <input v-model="password" class="form-control" :type="hidePassword ? 'password' : 'text'">
             </div>
-            <button class="btn btn-primary w-100" @click="onLogin">Login</button>
+            <button v-if="loginLoading" class="btn btn-primary w-100" type="button" disabled>
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <span class="sr-only">Loading...</span>
+            </button>
+            <button v-else class="btn btn-primary w-100" @click="onLogin">Login</button>
             <div class="mt-3 text-center">
               <a>Don't have an account?</a><br>
               <a href="#" @click="onOpenSignup">Create account</a>
@@ -106,7 +124,7 @@ export default {
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="email" class="form-label">Email address: </label>
+            <label for="email" class="form-label">Email Address: </label>
             <input type="text" v-model="email" class="form-control" id="email" placeholder="example@gmail.com">
           </div>
           <div class="mb-3">
@@ -121,7 +139,21 @@ export default {
             </div>
             <input v-model="password" class="form-control" :type="hidePassword ? 'password' : 'text'">
           </div>
-          <button class="btn btn-primary w-100" @click="onSignUp">Login</button>
+          <div class="mb-3">
+            <div class="d-flex justify-content-between">
+              <label for="confirmPassword" class="form-label">Confirm Password: </label>
+              <i v-if="hidePassword" @click="viewPassword">
+                <font-awesome-icon :icon="['fas', 'eye']" />
+              </i>
+              <i v-else @click="viewPassword">
+                <font-awesome-icon :icon="['fas', 'eye-slash']" />
+              </i>
+            </div>
+            <input v-model="confirmPassword" class="form-control" :type="hidePassword ? 'password' : 'text'">
+          </div>
+          <div class="justify-content-center align-items-center d-flex">
+            <button class="btn btn-primary w-50" @click="onSignUp">Sing Up</button>
+          </div>
         </div>
       </div>
     </div>

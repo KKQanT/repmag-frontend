@@ -59,8 +59,10 @@ export default {
   watch: {
     //setUserProfile
     loginSignal(newVal: boolean, oldVal: boolean) {
+      console.log("login signal invoked")
       if (newVal || oldVal) {
         this.setUpPage();
+        this.loginSignal = false
       }
     },
 
@@ -78,6 +80,7 @@ export default {
   methods: {
 
     async setUpPage() {
+      this.pageStatus = PageStatus.Loading
       const bearerToken = getBearerToken();
       if (bearerToken) {
         const userData = await this.getUserProfile();
