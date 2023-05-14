@@ -42,11 +42,19 @@ enum MatchingStatus {
     unmatched="unmatched"
 }
 
+interface Message {
+    message: string,
+    time: string,
+    senderID: string,
+  }
+  
+
 export {
     PageStatus,
     GenderEnum,
     type PreferencesType,
     type PrivateMessageArgs,
     type OtherUser,
-    MatchingStatus
+    MatchingStatus,
+    type Message
 };

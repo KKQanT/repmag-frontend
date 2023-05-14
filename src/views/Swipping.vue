@@ -26,6 +26,7 @@ export default {
                     //emit match status
                     socket.emit("match notify", { targetUserID: targetUserID })
                 } else if (result === "liked") {
+                    console.log("liked")
                     socket.emit("liked notify", { targetUserID: targetUserID })
                 }
             }
@@ -95,7 +96,7 @@ export default {
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-danger" @click="() => passUser(selectedPartner!.userID)">pass</button>
-                    <button class="btn btn-success" @click="() => likeUser(selectedPartner!.userID)">pass</button>
+                    <button class="btn btn-success" @click="() => likeUser(selectedPartner!.userID)">like</button>
                 </div>
             </div>
         </div>

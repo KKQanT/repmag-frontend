@@ -2,7 +2,7 @@
 <script lang="ts">
 
 import userServices from "./services/userServices";
-import { PageStatus, OtherUser, PrivateMessageArgs } from "./types";
+import { PageStatus, OtherUser, PrivateMessageArgs, Message } from "./types";
 import { getBearerToken, getTime, notifyError } from "./utils";
 import Auth from "./views/Auth.vue";
 import InputProfilePage from "./views/InputProfilePage.vue";
@@ -48,7 +48,7 @@ export default {
       matchedUser: [] as OtherUser[],
       matchedUserMap: new Map(),
       selectedUserToChat: null as OtherUser | null,
-      inMemoryCacheChat: new Map(),
+      inMemoryCacheChat: new Map<string, Message[]>(),
     }
   },
 
@@ -145,13 +145,14 @@ export default {
 
           if (respB.status === 200 && respB.data.length > 0) {
             let messages = this.inMemoryCacheChat.get(item.userID);
-
-            for (const messageData of respB.data) {
-              messages.push({
-                message: messageData.message,
-                time: messageData.createdAt,
-                senderID: messageData.fromUserID
-              });
+            if (messages) {
+              for (const messageData of respB.data) {
+                messages.push({
+                  message: messageData.message,
+                  time: messageData.createdAt,
+                  senderID: messageData.fromUserID
+                });
+              }
             }
           }
         }
@@ -185,22 +186,26 @@ export default {
       socket.on("private message", (data: PrivateMessageArgs) => {
         const senderID = data.fromUserID;
         let messages = this.inMemoryCacheChat.get(senderID);
-        messages.push({
-          message: data.message,
-          time: getTime(),
-          senderID: senderID
-        });
+        if (messages) {
+          messages.push({
+            message: data.message,
+            time: getTime(),
+            senderID: senderID
+          });
+        }
       }),
 
       socket.on("self private message", (data: PrivateMessageArgs) => {
         const senderID = data.fromUserID;
         const toUserID = data.toUserID;
         let messages = this.inMemoryCacheChat.get(toUserID);
-        messages.push({
-          message: data.message,
-          time: getTime(),
-          senderID: senderID
-        });
+        if (messages) {
+          messages.push({
+            message: data.message,
+            time: getTime(),
+            senderID: senderID
+          });
+        }
       });
   }
 }
@@ -229,17 +234,13 @@ export default {
         </ul>
       </div>
       <button class="btn btn-outline-danger mx-2" @click="logout">
-          logout
-        </button>
+        logout
+      </button>
     </nav>
     <div>
       <Swipping v-if="pageStatus === 'swipping'" :recommended-users-props="recommendsUsers" />
-      <MatchedList v-else-if="pageStatus === 'matchedList'" 
-      :mathced-list-props="matchedUser"
-      :self-name="userInfo.name" :partner-name="selectedUserToChat?.name"
-        :self-user-i-d="userInfo.userID" :partner-user-i-d="selectedUserToChat?.userID"
-        :messages="inMemoryCacheChat.get(selectedUserToChat?.userID)"
-        @emittedSelectedUserToChat="(value) => handleEmittedSelectedUserToChat(value)" />
+      <MatchedList v-else-if="pageStatus === 'matchedList'" :mathced-list-props="matchedUser" :self-name="userInfo.name"
+        :self-user-i-d="userInfo.userID" :all-messages="inMemoryCacheChat" />
     </div>
   </div>
 </template>
