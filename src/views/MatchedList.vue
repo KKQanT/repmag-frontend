@@ -71,7 +71,7 @@ export default {
                   <div class="mb-auto">
                     {{ userInfo.name }}
                   </div>
-                  <div>
+                  <div class="text-muted">
                     {{ "this is template message" }}
                   </div>
                 </div>
@@ -83,7 +83,26 @@ export default {
           </div>
         </div>
       </div>
-      <div class="col-md-8 bg-info vh-100 mb-4">
+      <div class="col-md-8 mb-4 bg-info">
+        <div class="container">
+          <div class="chatbox">
+            <div class="chat-header">Test</div>
+            <!-- Chat messages -->
+            <div class="message received">
+              <p class="message-content">Received message</p>
+              <span class="text-muted">10:00 AM</span>
+            </div>
+            <div class="message sent">
+              <p class="message-content">Sent message</p>
+              <span class="text-muted">10:05 AM</span>
+            </div>
+            <!-- Add more message items as needed -->
+          </div>
+          <div class="message-input">
+            <input type="text" class="form-control" placeholder="Type a message..." />
+            <button class="btn btn-primary">Send</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -99,14 +118,58 @@ export default {
   height: 60px;
 }
 
-.user-name-message {
-  justify-content: space-between;
-}
-
 .padding-bottom {
   padding-bottom: 15px;
 }
 
+.container {
+  margin-top: 20px;
+}
+
+.profile-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.chatbox {
+  height: 800px;
+  overflow-y: scroll;
+}
+
+.message {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.received {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.sent {
+  background-color: #dcf8c6;
+  text-align: right;
+}
+
+.message-content {
+  margin-bottom: 5px;
+}
+
+.message-input {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.chat-header {
+  padding: auto;
+  margin-bottom: 10px;
+  font-size: large;
+  font-weight: 500;
+}
 </style>
   
   
