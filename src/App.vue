@@ -72,9 +72,6 @@ export default {
       }
     },
 
-    selectedUserToChat(_newVal: OtherUser | null, _oldVal: OtherUser | null) {
-      this.switchPage(PageStatus.Chatroom);
-    }
   },
 
   methods: {
@@ -167,7 +164,6 @@ export default {
 
     handleEmittedSelectedUserToChat(value: OtherUser) {
       this.selectedUserToChat = value;
-      this.switchPage(PageStatus.Chatroom);
     },
 
     logout() {
@@ -238,11 +234,12 @@ export default {
     </nav>
     <div>
       <Swipping v-if="pageStatus === 'swipping'" :recommended-users-props="recommendsUsers" />
-      <MatchedList v-else-if="pageStatus === 'matchedList'" :mathced-list-props="matchedUser"
-        @emittedSelectedUserToChat="(value) => handleEmittedSelectedUserToChat(value)" />
-      <ChatRoom v-else-if="pageStatus === 'chatroom'" :self-name="userInfo.name" :partner-name="selectedUserToChat?.name"
+      <MatchedList v-else-if="pageStatus === 'matchedList'" 
+      :mathced-list-props="matchedUser"
+      :self-name="userInfo.name" :partner-name="selectedUserToChat?.name"
         :self-user-i-d="userInfo.userID" :partner-user-i-d="selectedUserToChat?.userID"
-        :messages="inMemoryCacheChat.get(selectedUserToChat?.userID)" />
+        :messages="inMemoryCacheChat.get(selectedUserToChat?.userID)"
+        @emittedSelectedUserToChat="(value) => handleEmittedSelectedUserToChat(value)" />
     </div>
   </div>
 </template>
