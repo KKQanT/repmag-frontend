@@ -232,9 +232,9 @@ export default {
           </li>
         </ul>
       </div>
-      <button class="btn btn-outline-danger mx-2" @click="logout"> 
-        logout
-      </button>
+      <button class="btn btn-outline-danger mx-2" @click="logout">
+          logout
+        </button>
     </nav>
     <div>
       <Swipping v-if="pageStatus === 'swipping'" :recommended-users-props="recommendsUsers" />

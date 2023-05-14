@@ -97,7 +97,7 @@ export default {
                   <font-awesome-icon :icon="['fas', 'eye-slash']" />
                 </i>
               </div>
-              <input v-model="password" class="form-control" :type="hidePassword ? 'password' : 'text'">
+              <input v-model="password" class="form-control" :type="hidePassword ? 'password' : 'text'" v-on:keyup.enter="onLogin">
             </div>
             <button v-if="loginLoading" class="btn btn-primary w-100" type="button" disabled>
               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
