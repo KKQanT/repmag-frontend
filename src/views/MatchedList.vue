@@ -71,7 +71,7 @@ export default {
                   <div class="mb-auto">
                     {{ userInfo.name }}
                   </div>
-                  <div class="text-muted">
+                  <div>
                     {{ "this is template message" }}
                   </div>
                 </div>
@@ -154,11 +154,13 @@ export default {
 
 .received {
   background-color: #f2f2f2;
+  color: #000;
   text-align: left;
 }
 
 .sent {
-  background-color: #dcf8c6;
+  background-color: #0393e6;
+  color: #f2f2f2;
   text-align: right;
 }
 
@@ -187,7 +189,8 @@ export default {
 .user-card:hover {
   border-color: #000;
   /* Change border color on hover */
-  background: #dcf8c6;
+  background: hsl(216, 92%, 76%);
+  color: white;
 }
 
 .time-text {
