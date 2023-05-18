@@ -56,7 +56,7 @@ export default {
     </div>-->
   <div class="container">
     <div class="row">
-      <div class="col-md-4 bg-primary">
+      <div class="col-md-4">
         <div class="card">
           <div class="card-header text-center">
           </div>
@@ -83,10 +83,10 @@ export default {
           </div>
         </div>
       </div>
-      <div class="col-md-8 mb-4 bg-info">
+      <div class="col-md-8 mb-4">
+        <div class="chat-header">{{ selectedPartner?.name ? selectedPartner?.name : "" }}</div>
         <div class="container">
           <div class="chatbox">
-            <div class="chat-header">{{ selectedPartner?.name ? selectedPartner?.name : "Blank" }}</div>
             <div v-for="item in messages">
               <div v-if="item.senderID === selfUserID" 
               class="message sent">
@@ -148,8 +148,8 @@ export default {
 
 .message {
   padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
+  margin-bottom: 20px;
+  border-radius: 20px;
 }
 
 .received {
