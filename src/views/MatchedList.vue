@@ -11,6 +11,7 @@ export default {
     selfName: String,
     selfUserID: String,
     allMessages: Object as PropType<Map<string, Message[]>>,
+    countUnreads: Object as PropType<Map<string, number>>,
   },
 
   data() {
@@ -74,8 +75,8 @@ export default {
                     {{ "this is template message" }}
                   </div>
                 </div>
-                <div class="col-md-1 d-flex justify-content-center align-items-center">
-                  <div class="badge badge-pill bg-danger">3</div>
+                <div v-if="countUnreads?.get(userInfo.userID)! > 0" class="col-md-1 d-flex justify-content-center align-items-center">
+                  <div class="badge badge-pill bg-danger">{{countUnreads?.get(userInfo.userID)}}</div>
                 </div>
               </div>
             </div>

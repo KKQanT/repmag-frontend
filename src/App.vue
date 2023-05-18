@@ -6,7 +6,6 @@ import { PageStatus, OtherUser, PrivateMessageArgs, Message } from "./types";
 import { getBearerToken, getTime, notifyError } from "./utils";
 import Auth from "./views/Auth.vue";
 import InputProfilePage from "./views/InputProfilePage.vue";
-import ChatRoom from "./views/ChatRoom.vue";
 import socket from "./socket";
 import matchServices from "./services/matchedServices";
 import Swipping from "./views/Swipping.vue"
@@ -28,7 +27,6 @@ export default {
     InputProfilePage,
     Swipping,
     MatchedList,
-    ChatRoom,
     Loading
   },
 
@@ -49,6 +47,7 @@ export default {
       matchedUserMap: new Map(),
       selectedUserToChat: null as OtherUser | null,
       inMemoryCacheChat: new Map<string, Message[]>(),
+      countUnreads: new Map<string, number>(),
     }
   },
 
@@ -82,6 +81,7 @@ export default {
             object[index].isRead = true
           }
         })
+        this.countUnreads.set(partnerUserID_, 0);
         socket.emit("receiver has read all messages", {
           fromUserID: partnerUserID_, 
           toUserID: this.userInfo.userID
@@ -160,9 +160,11 @@ export default {
           this.matchedUserMap.set(item.userID, item)
           const respB = await chatServices.getChatHistory(item.userID)
           this.inMemoryCacheChat.set(item.userID, []);
+          this.countUnreads.set(item.userID, 0);
 
           if (respB.status === 200 && respB.data.length > 0) {
             let messages = this.inMemoryCacheChat.get(item.userID);
+            let countUnread = 0;
             if (messages) {
               for (const messageData of respB.data) {
                 messages.push({
@@ -171,13 +173,20 @@ export default {
                   senderID: messageData.fromUserID,
                   isRead: messageData.isRead
                 });
+
+                if ((messageData.senderID === item.userID) && messageData.isRead) {
+                  countUnread += 1
+                }
               }
               console.log('chat')
               console.log(item.name)
               console.log(messages)
             }
+            this.countUnreads.set(item.userID, countUnread);
           }
         }
+        console.log('count unread')
+        console.log(this.countUnreads)
       }
     },
 
@@ -212,6 +221,15 @@ export default {
         const senderID = data.fromUserID;
         let messages = this.inMemoryCacheChat.get(senderID);
         const isRead = this.selectedUserToChat?.userID === senderID ? true : false;
+        if (senderID !== this.userInfo.userID) {
+          if (!isRead) {
+            let countUnread = this.countUnreads.get(senderID);
+            countUnread! += 1
+            this.countUnreads.set(senderID, countUnread!);
+            console.log('update count unread')
+            console.log(this.countUnreads)
+          } 
+        }
 
         if (isRead) {socket.emit("receiver instant read message", data);}
 
@@ -298,7 +316,8 @@ export default {
       :mathced-list-props="matchedUser" 
       :self-name="userInfo.name"
       :self-user-i-d="userInfo.userID" 
-      :all-messages="inMemoryCacheChat" 
+      :all-messages="inMemoryCacheChat"
+      :count-unreads="countUnreads"
       @emittedSelectedUserToChat="(value) => handleEmittedSelectedUserToChat(value)"
       />
     </div>
