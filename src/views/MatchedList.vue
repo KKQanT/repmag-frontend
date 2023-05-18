@@ -26,6 +26,7 @@ export default {
     selectUser(userInfo: OtherUser) {
       this.messages = this.allMessages?.get(userInfo.userID);
       this.selectedPartner = userInfo;
+      this.$emit("emittedSelectedUserToChat", userInfo)
     },
     onSendMessage() {
 
@@ -38,11 +39,12 @@ export default {
       this.messages!.push({
         message: this.newMessage,
         time: getTime(),
-        senderID: this.selfUserID!
+        senderID: this.selfUserID!,
+        isRead: true
       });
       this.newMessage = '';
     },
-  }
+  },
 }
 
 </script>
@@ -88,15 +90,16 @@ export default {
               <div v-if="item.senderID === selfUserID" 
               class="message sent">
                 <p class="message-content">{{ item.message }}</p>
-                <span class="text-muted">
-                  {{ (new Date(item.time)).toLocaleTimeString([], { timeStyle: "short" }) }}
-                </span>
+                <div class="time-text">
+                  {{ item.isRead ? "Read" : "sent" }} {{ (new Date(item.time)).toLocaleTimeString([], { timeStyle: "short" }) }}
+
+                </div>
               </div>
               <div v-else class="message received">
                 <p class="message-content">{{ item.message }}</p>
-                <span class="text-muted">
+                <div class="time-text">
                   {{ (new Date(item.time)).toLocaleTimeString([], { timeStyle: "short" }) }}
-                </span>
+                </div>
               </div>
             </div>
           </div>
@@ -185,6 +188,11 @@ export default {
   /* Change border color on hover */
   background: #dcf8c6;
 }
+
+.time-text {
+  font-size:x-small;
+}
+
 </style>
   
   

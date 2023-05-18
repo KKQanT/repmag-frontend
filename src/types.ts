@@ -21,7 +21,6 @@ interface PreferencesType {
 
 interface PrivateMessageArgs {
     message: string,
-    fromSocketID: string,
     toUserID: string,
     fromUserID: string
 }
@@ -46,6 +45,7 @@ interface Message {
     message: string,
     time: string,
     senderID: string,
+    isRead: boolean
   }
   
 

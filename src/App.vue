@@ -59,7 +59,7 @@ export default {
   watch: {
     //setUserProfile
     loginSignal(newVal: boolean, oldVal: boolean) {
-      console.log("login signal invoked")
+      console.log("login signal invoked");
       if (newVal || oldVal) {
         this.setUpPage();
         this.loginSignal = false
@@ -71,6 +71,24 @@ export default {
         this.getRecommendedUsers()
       }
     },
+
+    selectedUserToChat(newVal: OtherUser|null, _oldVal: OtherUser|null) {
+      console.log('selected_user_to_chat has changed');
+      if (newVal) {
+        const partnerUserID_ = newVal.userID;
+        let messages = this.inMemoryCacheChat.get(partnerUserID_);
+        messages?.map((element, index, object) => {
+          if (!element.isRead && (element.senderID === partnerUserID_)) {
+            object[index].isRead = true
+          }
+        })
+        socket.emit("receiver has read all messages", {
+          fromUserID: partnerUserID_, 
+          toUserID: this.userInfo.userID
+        });
+        console.log('invoke emit read all messaged')
+      }
+    }
 
   },
 
@@ -150,9 +168,13 @@ export default {
                 messages.push({
                   message: messageData.message,
                   time: messageData.createdAt,
-                  senderID: messageData.fromUserID
+                  senderID: messageData.fromUserID,
+                  isRead: messageData.isRead
                 });
               }
+              console.log('chat')
+              console.log(item.name)
+              console.log(messages)
             }
           }
         }
@@ -161,6 +183,9 @@ export default {
 
     switchPage(pageStatus) {
       this.pageStatus = pageStatus
+      if (pageStatus !== PageStatus.MatchedList) {
+        this.selectedUserToChat = null
+      }
     },
 
     handleEmittedSelectedUserToChat(value: OtherUser) {
@@ -186,14 +211,43 @@ export default {
       socket.on("private message", (data: PrivateMessageArgs) => {
         const senderID = data.fromUserID;
         let messages = this.inMemoryCacheChat.get(senderID);
+        const isRead = this.selectedUserToChat?.userID === senderID ? true : false;
+
+        if (isRead) {socket.emit("receiver instant read message", data);}
+
         if (messages) {
           messages.push({
             message: data.message,
             time: getTime(),
-            senderID: senderID
+            senderID: senderID,
+            isRead: isRead
           });
         }
       }),
+
+      socket.on("receiver instant read message", (data) => {
+        const userID_ = data.fromUserID;
+        const partnerUserID_ = data.toUserID;
+        const recentReadTime = data.recentReadTime;
+        let messages = this.inMemoryCacheChat.get(partnerUserID_);
+        messages?.map((element, index, object) => {
+          if (!element.isRead && (element.time < recentReadTime) && (element.senderID === userID_)) {
+            object[index].isRead = true
+          }
+        });
+        //to continue
+      });
+
+      socket.on("receiver has read all messages", (data: PrivateMessageArgs) => {
+        const userID_ = data.fromUserID;
+        const partnerUserID_ = data.toUserID;
+        let messages = this.inMemoryCacheChat.get(partnerUserID_);
+        messages?.map((element, index, object) => {
+          if (!element.isRead && (element.senderID === userID_)) {
+            object[index].isRead = true
+          }
+        })
+      })
 
       socket.on("self private message", (data: PrivateMessageArgs) => {
         const senderID = data.fromUserID;
@@ -203,11 +257,12 @@ export default {
           messages.push({
             message: data.message,
             time: getTime(),
-            senderID: senderID
+            senderID: senderID,
+            isRead: true
           });
         }
       });
-  }
+  },
 }
 
 </script>
@@ -239,8 +294,13 @@ export default {
     </nav>
     <div>
       <Swipping v-if="pageStatus === 'swipping'" :recommended-users-props="recommendsUsers" />
-      <MatchedList v-else-if="pageStatus === 'matchedList'" :mathced-list-props="matchedUser" :self-name="userInfo.name"
-        :self-user-i-d="userInfo.userID" :all-messages="inMemoryCacheChat" />
+      <MatchedList v-else-if="pageStatus === 'matchedList'" 
+      :mathced-list-props="matchedUser" 
+      :self-name="userInfo.name"
+      :self-user-i-d="userInfo.userID" 
+      :all-messages="inMemoryCacheChat" 
+      @emittedSelectedUserToChat="(value) => handleEmittedSelectedUserToChat(value)"
+      />
     </div>
   </div>
 </template>
