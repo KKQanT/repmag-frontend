@@ -21,19 +21,10 @@ export default {
       userIDtoUserName: new Map(),
       selectedPartner: null as OtherUser | null,
       messages: [] as Message[] | undefined,
-      scrollCss: "none"
     }
   },
 
-  watch: {
-    selectedPartner(newVal: OtherUser | null, _oldVal: OtherUser | null) {
-      if (!newVal) {
-        this.scrollCss = "none"
-      } else {
-        this.scrollCss = "scroll"
-      }
-    }
-  },
+ 
 
   methods: {
     selectUser(userInfo: OtherUser) {
@@ -109,9 +100,9 @@ export default {
         </div>
       </div>
       <div class="col-md-8 mb-4 p-3 border box-shadow">
-        <div class="chat-header">{{ selectedPartner?.name ? selectedPartner?.name : "" }}</div>
+        <div v-if="selectedPartner" class="chat-header border-bottom border-1 border-secondary">{{ selectedPartner?.name ? selectedPartner?.name : "" }}</div>
         <div class="container">
-          <div class="chatbox" v-if="selectedPartner">
+          <div class="chatbox" v-if="selectedPartner" ref="chatbox">
             <div v-for="item in messages">
               <div v-if="item.senderID === selfUserID" class="message sent">
                 <p class="message-content">{{ item.message }}</p>
@@ -157,7 +148,7 @@ export default {
 }
 
 .container {
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .profile-image {
@@ -229,7 +220,7 @@ export default {
 }
 
 .no-chat-select {
-  height:700px;
+  height:750px;
   display: flex;
   text-align: center;
   align-items: center;
