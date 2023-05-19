@@ -20,7 +20,18 @@ export default {
       newMessage: "" as string,
       userIDtoUserName: new Map(),
       selectedPartner: null as OtherUser | null,
-      messages: [] as Message[] | undefined
+      messages: [] as Message[] | undefined,
+      scrollCss: "none"
+    }
+  },
+
+  watch: {
+    selectedPartner(newVal: OtherUser | null, _oldVal: OtherUser | null) {
+      if (!newVal) {
+        this.scrollCss = "none"
+      } else {
+        this.scrollCss = "scroll"
+      }
     }
   },
 
@@ -97,10 +108,10 @@ export default {
           </div>
         </div>
       </div>
-      <div class="col-md-8 mb-4">
+      <div class="col-md-8 mb-4 p-3 border box-shadow">
         <div class="chat-header">{{ selectedPartner?.name ? selectedPartner?.name : "" }}</div>
         <div class="container">
-          <div class="chatbox">
+          <div class="chatbox" v-if="selectedPartner">
             <div v-for="item in messages">
               <div v-if="item.senderID === selfUserID" class="message sent">
                 <p class="message-content">{{ item.message }}</p>
@@ -119,7 +130,12 @@ export default {
               </div>
             </div>
           </div>
-          <div class="message-input">
+          <div v-else>
+            <div class="border no-chat-select box-shadow">
+              <span>No chat room selected</span>
+            </div>
+          </div>
+          <div class="message-input" v-if="selectedPartner">
             <input type="text" class="form-control" placeholder="Type a message..." v-model="newMessage"
               v-on:keyup.enter="onSendMessage" />
             <button class="btn btn-primary" @click="onSendMessage">Send</button>
@@ -152,8 +168,9 @@ export default {
 }
 
 .chatbox {
-  height: 800px;
+  height:700px;
   overflow-y: scroll;
+  padding: 20px;
 }
 
 .message {
@@ -210,6 +227,15 @@ export default {
 .preview-message {
   color: hsla(0, 3%, 59%, 0.76);
 }
+
+.no-chat-select {
+  height:700px;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
 </style>
   
   
