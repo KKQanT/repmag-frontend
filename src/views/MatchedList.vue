@@ -12,6 +12,7 @@ export default {
     selfUserID: String,
     allMessages: Object as PropType<Map<string, Message[]>>,
     countUnreads: Object as PropType<Map<string, number>>,
+    recentMessages: Object as PropType<Map<string, string>>,
   },
 
   data() {
@@ -45,6 +46,18 @@ export default {
       });
       this.newMessage = '';
     },
+    reduceText(text: string) {
+      try {
+        if (text.length > 15) {
+          return text.slice(0, 25) + ' ...'
+        } else {
+          return text
+        }
+      } catch (err) {
+        return ""
+      }
+
+    }
   },
 }
 
@@ -61,7 +74,7 @@ export default {
           <div class="card-header text-center">
           </div>
           <div class="card-body">
-            <div class="row border-bottom border-secondary padding-bottom mb-3 user-card"
+            <div class="row user-card border-bottom border-secondary padding-bottom mb-3"
               v-for="userInfo in mathcedListProps" :key="userInfo.userID" @click="selectUser(userInfo)">
               <div class="col-md-12 row">
                 <div class="col-md-3 user-info-avartar d-flex justify-content-center">
@@ -71,12 +84,13 @@ export default {
                   <div class="mb-auto">
                     {{ userInfo.name }}
                   </div>
-                  <div>
-                    {{ "this is template message" }}
+                  <div class="preview-message">
+                    {{ recentMessages ? reduceText(recentMessages.get(userInfo.userID)!) : "" }}
                   </div>
                 </div>
-                <div v-if="countUnreads?.get(userInfo.userID)! > 0" class="col-md-1 d-flex justify-content-center align-items-center">
-                  <div class="badge badge-pill bg-danger">{{countUnreads?.get(userInfo.userID)}}</div>
+                <div v-if="countUnreads?.get(userInfo.userID)! > 0"
+                  class="col-md-1 d-flex justify-content-center align-items-center">
+                  <div class="badge badge-pill bg-danger">{{ countUnreads?.get(userInfo.userID) }}</div>
                 </div>
               </div>
             </div>
@@ -88,11 +102,12 @@ export default {
         <div class="container">
           <div class="chatbox">
             <div v-for="item in messages">
-              <div v-if="item.senderID === selfUserID" 
-              class="message sent">
+              <div v-if="item.senderID === selfUserID" class="message sent">
                 <p class="message-content">{{ item.message }}</p>
                 <div class="time-text">
-                  {{ item.isRead ? "Read" : "sent" }} {{ (new Date(item.time)).toLocaleTimeString([], { timeStyle: "short" }) }}
+                  {{ item.isRead ? "Read" : "sent" }} {{ (new Date(item.time)).toLocaleTimeString([], {
+                    timeStyle: "short"
+                  }) }}
 
                 </div>
               </div>
@@ -105,13 +120,8 @@ export default {
             </div>
           </div>
           <div class="message-input">
-            <input 
-            type="text" 
-            class="form-control" 
-            placeholder="Type a message..." 
-            v-model="newMessage"
-            v-on:keyup.enter="onSendMessage"
-            />
+            <input type="text" class="form-control" placeholder="Type a message..." v-model="newMessage"
+              v-on:keyup.enter="onSendMessage" />
             <button class="btn btn-primary" @click="onSendMessage">Send</button>
           </div>
         </div>
@@ -194,9 +204,12 @@ export default {
 }
 
 .time-text {
-  font-size:x-small;
+  font-size: x-small;
 }
 
+.preview-message {
+  color: hsla(0, 3%, 59%, 0.76);
+}
 </style>
   
   

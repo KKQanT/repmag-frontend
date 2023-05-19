@@ -48,6 +48,7 @@ export default {
       selectedUserToChat: null as OtherUser | null,
       inMemoryCacheChat: new Map<string, Message[]>(),
       countUnreads: new Map<string, number>(),
+      recentMessages: new Map<string, string>(),
     }
   },
 
@@ -165,8 +166,9 @@ export default {
           if (respB.status === 200 && respB.data.length > 0) {
             let messages = this.inMemoryCacheChat.get(item.userID);
             let countUnread = 0;
+            let recentMessage = '';
             if (messages) {
-              for (const messageData of respB.data) {
+              for (const [index, messageData] of respB.data.entries()) {
                 messages.push({
                   message: messageData.message,
                   time: messageData.createdAt,
@@ -177,16 +179,21 @@ export default {
                 if ((messageData.senderID === item.userID) && messageData.isRead) {
                   countUnread += 1
                 }
+
+                if (index === respB.data.length - 1) {
+                  recentMessage = messageData.message
+                }
               }
               console.log('chat')
               console.log(item.name)
               console.log(messages)
             }
+            this.recentMessages.set(item.userID, recentMessage);
             this.countUnreads.set(item.userID, countUnread);
           }
         }
-        console.log('count unread')
-        console.log(this.countUnreads)
+        console.log('recentMessages')
+        console.log(this.recentMessages)
       }
     },
 
@@ -318,6 +325,7 @@ export default {
       :self-user-i-d="userInfo.userID" 
       :all-messages="inMemoryCacheChat"
       :count-unreads="countUnreads"
+      :recent-messages="recentMessages"
       @emittedSelectedUserToChat="(value) => handleEmittedSelectedUserToChat(value)"
       />
     </div>
