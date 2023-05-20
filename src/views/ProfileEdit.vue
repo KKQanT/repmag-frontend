@@ -1,3 +1,69 @@
+<script>
+export default {
+  data() {
+    return {
+      inputProfile: true,
+      name: null,
+      gender: null,
+      university: null,
+      age: null,
+      occupation: null,
+      userImages: [],
+      bio: null,
+      location: {
+        city: null,
+        country: null
+      },
+      preferences: null,
+      preferGender: null,
+      minPreferAge: null,
+      maxPreferAge: null,
+      preferUniversities: [],
+      preferOccupations: [],
+      showImageGallery: false,
+      showImageUpload: false
+    };
+  },
+  computed: {
+    profileImage() {
+      return this.userImages.length > 0 ? this.userImages[0] : 'placeholder.png';
+    },
+    remainingImages() {
+      return Math.max(0, 5 - this.userImages.length);
+    }
+  },
+  methods: {
+    openImageGallery() {
+      this.showImageGallery = true;
+    },
+    openImageUpload() {
+      this.showImageGallery = false;
+      this.showImageUpload = true;
+    },
+    handleUserImagesChange(event) {
+      const files = event.target.files;
+      for (let i = 0; i < files.length; i++) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.userImages.push(e.target.result);
+        };
+        reader.readAsDataURL(files[i]);
+      }
+      this.showImageUpload = false;
+    },
+    toggleInputProfile() {
+      this.inputProfile = !this.inputProfile;
+    },
+    saveProfile() {
+      // Handle saving profile logic
+      // Access the updated values in this.name, this.gender, this.university, this.age, this.occupation,
+      // this.userImages, this.bio, this.location, this.preferences, this.preferGender, this.minPreferAge,
+      // this.maxPreferAge, this.preferUniversities, this.preferOccupations
+    }
+  }
+};
+</script>
+
 <template>
   <div class="profile-edit">
     <!--div class="profile-edit-left bg-info">
@@ -27,10 +93,10 @@
     <div class="profile-edit-left">
       <div class="card">
         <div class="card-body">
-          <div class="card-img-top mb-3" @click="openImageGallery">
-            <img :src="'/download.jpg'" alt="Profile Image">
+          <div class="profile-image">
+            <img class="card-img-top mb-3" :src="'/download.jpg'" alt="Profile Image">
             <div class="image-overlay">
-              <span>Click to View Images</span>
+              Upload new image
             </div>
           </div>
           <h4 class="card-title">{{ "User 1" }}</h4>
@@ -111,72 +177,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      inputProfile: true,
-      name: null,
-      gender: null,
-      university: null,
-      age: null,
-      occupation: null,
-      userImages: [],
-      bio: null,
-      location: {
-        city: null,
-        country: null
-      },
-      preferences: null,
-      preferGender: null,
-      minPreferAge: null,
-      maxPreferAge: null,
-      preferUniversities: [],
-      preferOccupations: [],
-      showImageGallery: false,
-      showImageUpload: false
-    };
-  },
-  computed: {
-    profileImage() {
-      return this.userImages.length > 0 ? this.userImages[0] : 'placeholder.png';
-    },
-    remainingImages() {
-      return Math.max(0, 5 - this.userImages.length);
-    }
-  },
-  methods: {
-    openImageGallery() {
-      this.showImageGallery = true;
-    },
-    openImageUpload() {
-      this.showImageGallery = false;
-      this.showImageUpload = true;
-    },
-    handleUserImagesChange(event) {
-      const files = event.target.files;
-      for (let i = 0; i < files.length; i++) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.userImages.push(e.target.result);
-        };
-        reader.readAsDataURL(files[i]);
-      }
-      this.showImageUpload = false;
-    },
-    toggleInputProfile() {
-      this.inputProfile = !this.inputProfile;
-    },
-    saveProfile() {
-      // Handle saving profile logic
-      // Access the updated values in this.name, this.gender, this.university, this.age, this.occupation,
-      // this.userImages, this.bio, this.location, this.preferences, this.preferGender, this.minPreferAge,
-      // this.maxPreferAge, this.preferUniversities, this.preferOccupations
-    }
-  }
-};
-</script>
-
 <style scoped>
 .profile-edit {
   display: flex;
@@ -201,14 +201,14 @@ export default {
 
 .profile-image {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
 }
 
-.profile-image img {
+img {
   width: 100%;
   height: 100%;
   object-fit: cover;
