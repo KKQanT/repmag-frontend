@@ -65,8 +65,9 @@ export default {
 </script>
 
 <template>
-  <div class="profile-edit">
-    <!--div class="profile-edit-left bg-info">
+  <div class="container d-flex justify-content-center align-items-center mt-5">
+    <div class="row">
+      <!--div class="profile-edit-left bg-info">
       <div class="profile-image" @click="openImageGallery">
         <img :src="profileImage" alt="Profile Image">
         <div class="image-overlay">
@@ -90,86 +91,91 @@ export default {
         </div>
       </div>
     </div-->
-    <div class="profile-edit-left">
-      <div class="card">
-        <div class="card-body">
-          <div class="profile-image">
-            <img class="card-img-top mb-3" :src="'/download.jpg'" alt="Profile Image">
-            <div class="image-overlay">
-              Upload new image
+      <div class="col-lg-6 d-flex align-items-stretch">
+        <div class="card" style="width: 25rem;">
+          <div class="card-body">
+            <h5 class="card-title">Preview</h5>
+            <div class="d-flex justify-content-center align-items-center">
+              <div class="profile-image">
+                <img class="card-img-top mb-3" :src="'/download.jpg'" alt="Profile Image">
+                <div class="image-overlay">
+                  Upload new image
+                </div>
+              </div>
             </div>
+            <h4 class="card-title">{{ "User 1" }}</h4>
+            <h7 class="card-title">{{ "Software Developer" }}, {{ "SMC" }}</h7>
+            <br>
+            <h7 class="card-title">{{ "Chulalongkorn University" }}</h7>
+            <br>
+            <h9 class="card-title">{{ "age: 26" }}, {{ "Bangkok" }}, {{ "Thailand" }}</h9>
+            <p class="card-text mt-3">Some quick example text to build on the card title and make up the bulk of the
+              card's
+              content.</p>
+            <h9 class="card-title">interested in:</h9>
+            <ul class="interested-in">
+              <li>Lorem</li>
+              <li>Praesent</li>
+              <li>Nulla</li>
+              <li>Curabitur</li>
+              <li>Etiam</li>
+              <li>Donec</li>
+            </ul>
+            <div></div>
           </div>
-          <h4 class="card-title">{{ "User 1" }}</h4>
-          <h7 class="card-title">{{ "Software Developer" }}, {{ "SMC" }}</h7>
-          <br>
-          <h7 class="card-title">{{ "Chulalongkorn University" }}</h7>
-          <br>
-          <h9 class="card-title">{{ "age: 26" }}, {{ "Bangkok" }}, {{ "Thailand" }}</h9>
-          <p class="card-text mt-3">Some quick example text to build on the card title and make up the bulk of the card's
-            content.</p>
-          <h9 class="card-title">interested in:</h9>
-          <ul class="interested-in">
-            <li>Lorem</li>
-            <li>Praesent</li>
-            <li>Nulla</li>
-            <li>Curabitur</li>
-            <li>Etiam</li>
-            <li>Donec</li>
-          </ul>
-          <div></div>
         </div>
       </div>
-    </div>
-    <div class="profile-edit-right">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Edit Profile</h5>
-          <form>
-            <div class="form-group">
-              <label for="name">Name</label>
-              <input type="text" id="name" v-model="name" class="form-control">
-            </div>
-            <div class="row">
-              <div class="form-group col-md-6">
-                <label for="gender">Gender</label>
-                <select id="gender" v-model="gender" class="form-control">
-                  <option value="" disabled selected>Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
+      <div class="col-lg-6 d-flex align-items-stretch justify-content-center">
+        <div class="card" style="width: 25rem;">
+          <div class="card-body">
+            <h5 class="card-title">Edit Profile</h5>
+            <form>
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" v-model="name" class="form-control">
               </div>
-              <div class="form-group col-md-6">
-                <label for="age">Age</label>
-                <input type="number" id="age" v-model="age" class="form-control">
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="gender">Gender</label>
+                  <select id="gender" v-model="gender" class="form-control">
+                    <option value="" disabled selected>Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="age">Age</label>
+                  <input type="number" id="age" v-model="age" class="form-control">
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <label for="university">University</label>
-              <input type="text" id="university" v-model="university" class="form-control">
-            </div>
-            <div class="form-group">
-              <label for="occupation">Occupation</label>
-              <input type="text" id="occupation" v-model="occupation" class="form-control">
-            </div>
-            <div class="form-group">
-              <label for="bio">Bio</label>
-              <textarea id="bio" v-model="bio" class="form-control"></textarea>
-            </div>
-            <div class="row">
-              <div class="form-group col-md-6">
-                <label for="city">City</label>
-                <input type="text" id="city" v-model="location.city" class="form-control">
+              <div class="form-group">
+                <label for="university">University</label>
+                <input type="text" id="university" v-model="university" class="form-control">
               </div>
-              <div class="form-group col-md-6">
-                <label for="country">Country</label>
-                <input type="text" id="country" v-model="location.country" class="form-control">
+              <div class="form-group">
+                <label for="occupation">Occupation</label>
+                <input type="text" id="occupation" v-model="occupation" class="form-control">
               </div>
-            </div>
-          </form>
-        </div>
-        <div class="card-footer text-right">
-          <button class="btn btn-primary" @click="saveProfile">Save</button>
+              <div class="form-group">
+                <label for="bio">Bio</label>
+                <textarea id="bio" v-model="bio" class="form-control"></textarea>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="city">City</label>
+                  <input type="text" id="city" v-model="location.city" class="form-control">
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="country">Country</label>
+                  <input type="text" id="country" v-model="location.country" class="form-control">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="card-footer text-right">
+            <button class="btn btn-primary" @click="saveProfile">Save</button>
+          </div>
         </div>
       </div>
     </div>
@@ -193,10 +199,12 @@ export default {
 .profile-edit-left {
   flex: 1;
   margin-right: 30px;
+  align-items: stretch;
 }
 
 .profile-edit-right {
   flex: 1;
+  align-items: stretch;
 }
 
 .profile-image {
