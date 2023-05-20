@@ -211,6 +211,7 @@ export default {
     logout() {
       localStorage.removeItem("bearerToken");
       this.switchPage(PageStatus.Auth);
+      socket.disconnect();
     }
   },
 
