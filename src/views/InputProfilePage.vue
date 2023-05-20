@@ -1,7 +1,7 @@
 <script lang="ts">
 
 import userServices from "../services/userServices";
-import { GenderEnum, PreferencesType } from "../types";
+import { GenderEnum, PreferencesType, Location } from "../types";
 
 export default {
   name: "InputProfilePage",
@@ -15,6 +15,12 @@ export default {
       university: null as string | null,
       age: null as number | null,
       occupation: null as string | null,
+      userImages: [] as string[],
+      bio: null as string | null,
+      location: {
+        city: null as string | null,
+        country: null as string | null
+      } as Location | null,
 
       preferences: null as PreferencesType | null,
       preferGender: null as GenderEnum | null,
@@ -108,7 +114,7 @@ export default {
             <button class="btn btn-primary" type="button" @click="inputProfile = false">Next</button>
           </div>
         </div>
-        
+
         <div v-else>
           <div class="mb-3">
             <label for="preferGender" class="form-label">Prefer Gender</label>

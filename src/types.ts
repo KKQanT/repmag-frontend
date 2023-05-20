@@ -4,7 +4,8 @@ enum PageStatus {
     InputProfile = "inputProfile",
     Swipping = "swipping",
     MatchedList = "matchedList",
-    Chatroom = "chatroom"
+    Chatroom = "chatroom",
+    ProfileEdit = "profileEdit"
 }
 
 enum GenderEnum {
@@ -17,6 +18,11 @@ interface PreferencesType {
     ageRange: { min: number | null, max: number | null } | null,
     universities: string[] | null,
     occupations: string[] | null
+}
+
+interface Location {
+    city: string | null,
+    country: string | null
 }
 
 interface PrivateMessageArgs {
@@ -56,5 +62,6 @@ export {
     type PrivateMessageArgs,
     type OtherUser,
     MatchingStatus,
-    type Message
+    type Message,
+    type Location
 };

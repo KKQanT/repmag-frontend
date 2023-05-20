@@ -14,6 +14,7 @@ import MatchedList from "./views/MatchedList.vue";
 import chatServices from "./services/chatServices";
 import { data } from "jquery";
 import Loading from "./views/Loading.vue";
+import ProfileEdit from "./views/ProfileEdit.vue";
 
 interface MatchNotifyData {
   name: string
@@ -27,12 +28,14 @@ export default {
     InputProfilePage,
     Swipping,
     MatchedList,
-    Loading
+    Loading,
+    ProfileEdit
   },
 
   data() {
     return {
       loginSignal: false as boolean,
+      isDropdownOpen: false,
       pageStatus: PageStatus.Auth as PageStatus,
       userInfo: {
         userID: "",
@@ -49,6 +52,7 @@ export default {
       inMemoryCacheChat: new Map<string, Message[]>(),
       countUnreads: new Map<string, number>(),
       recentMessages: new Map<string, string>(),
+      profilePicture: "/download.jpg"
     }
   },
 
@@ -72,7 +76,7 @@ export default {
       }
     },
 
-    selectedUserToChat(newVal: OtherUser|null, _oldVal: OtherUser|null) {
+    selectedUserToChat(newVal: OtherUser | null, _oldVal: OtherUser | null) {
       console.log('selected_user_to_chat has changed');
       if (newVal) {
         const partnerUserID_ = newVal.userID;
@@ -84,7 +88,7 @@ export default {
         })
         this.countUnreads.set(partnerUserID_, 0);
         socket.emit("receiver has read all messages", {
-          fromUserID: partnerUserID_, 
+          fromUserID: partnerUserID_,
           toUserID: this.userInfo.userID
         });
         console.log('invoke emit read all messaged')
@@ -94,6 +98,10 @@ export default {
   },
 
   methods: {
+
+    toggleDropdown() {
+      this.isDropdownOpen = !this.isDropdownOpen;
+    },
 
     async setUpPage() {
       this.pageStatus = PageStatus.Loading
@@ -198,6 +206,7 @@ export default {
     },
 
     switchPage(pageStatus) {
+      console.log('switch page invoke')
       this.pageStatus = pageStatus
       if (pageStatus !== PageStatus.MatchedList) {
         this.selectedUserToChat = null
@@ -236,10 +245,10 @@ export default {
             this.countUnreads.set(senderID, countUnread!);
             console.log('update count unread')
             console.log(this.countUnreads)
-          } 
+          }
         }
 
-        if (isRead) {socket.emit("receiver instant read message", data);}
+        if (isRead) { socket.emit("receiver instant read message", data); }
 
         if (messages) {
           messages.push({
@@ -264,30 +273,30 @@ export default {
         //to continue
       });
 
-      socket.on("receiver has read all messages", (data: PrivateMessageArgs) => {
-        const userID_ = data.fromUserID;
-        const partnerUserID_ = data.toUserID;
-        let messages = this.inMemoryCacheChat.get(partnerUserID_);
-        messages?.map((element, index, object) => {
-          if (!element.isRead && (element.senderID === userID_)) {
-            object[index].isRead = true
-          }
-        })
-      })
-
-      socket.on("self private message", (data: PrivateMessageArgs) => {
-        const senderID = data.fromUserID;
-        const toUserID = data.toUserID;
-        let messages = this.inMemoryCacheChat.get(toUserID);
-        if (messages) {
-          messages.push({
-            message: data.message,
-            time: getTime(),
-            senderID: senderID,
-            isRead: true
-          });
+    socket.on("receiver has read all messages", (data: PrivateMessageArgs) => {
+      const userID_ = data.fromUserID;
+      const partnerUserID_ = data.toUserID;
+      let messages = this.inMemoryCacheChat.get(partnerUserID_);
+      messages?.map((element, index, object) => {
+        if (!element.isRead && (element.senderID === userID_)) {
+          object[index].isRead = true
         }
-      });
+      })
+    })
+
+    socket.on("self private message", (data: PrivateMessageArgs) => {
+      const senderID = data.fromUserID;
+      const toUserID = data.toUserID;
+      let messages = this.inMemoryCacheChat.get(toUserID);
+      if (messages) {
+        messages.push({
+          message: data.message,
+          time: getTime(),
+          senderID: senderID,
+          isRead: true
+        });
+      }
+    });
   },
 }
 
@@ -298,37 +307,47 @@ export default {
   <Auth @emittedLoggedIn="(value) => loginSignal = value" v-else-if='pageStatus === "auth"' />
   <InputProfilePage @emittedPageStatus="(value) => pageStatus = value" v-else-if='pageStatus === "inputProfile"' />
   <div v-else>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-      <a class="navbar-brand mx-2" href="#">Logo</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand ms-3" href="#">Your Logo</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <a type="button" class="nav-link" @click="() => switchPage('swipping')">Swipping</a>
+            <a class="nav-link" href="#" @click="switchPage('swipping')">Swipping</a>
           </li>
           <li class="nav-item">
-            <a type="button" class="nav-link" @click="() => switchPage('matchedList')">MatchedList</a>
+            <a class="nav-link" href="#" @click="switchPage('matchedList')">MatchedList</a>
           </li>
         </ul>
       </div>
-      <button class="btn btn-outline-danger mx-2" @click="logout">
-        logout
-      </button>
+      <div class="nav-item dropdown me-2">
+        <a class="nav-link dropdown-toggle" href="#" @click="toggleDropdown" role="button" aria-haspopup="true"
+          aria-expanded="false">
+          <img class="profile-picture rounded-circle" :src="profilePicture" alt="Profile Picture">
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" :class="{ 'show': isDropdownOpen }">
+          <a class="dropdown-item" href="#" @click="switchPage('profileEdit')">Profile</a>
+          <a class="dropdown-item" href="#" @click="logout">Logout</a>
+        </div>
+      </div>
     </nav>
     <div>
       <Swipping v-if="pageStatus === 'swipping'" :recommended-users-props="recommendsUsers" />
-      <MatchedList v-else-if="pageStatus === 'matchedList'" 
-      :mathced-list-props="matchedUser" 
-      :self-name="userInfo.name"
-      :self-user-i-d="userInfo.userID" 
-      :all-messages="inMemoryCacheChat"
-      :count-unreads="countUnreads"
-      :recent-messages="recentMessages"
-      @emittedSelectedUserToChat="(value) => handleEmittedSelectedUserToChat(value)"
-      />
+      <MatchedList v-else-if="pageStatus === 'matchedList'" :mathced-list-props="matchedUser" :self-name="userInfo.name"
+        :self-user-i-d="userInfo.userID" :all-messages="inMemoryCacheChat" :count-unreads="countUnreads"
+        :recent-messages="recentMessages"
+        @emittedSelectedUserToChat="(value) => handleEmittedSelectedUserToChat(value)" />
+      <ProfileEdit v-else-if="pageStatus === 'profileEdit'" />
     </div>
   </div>
 </template>
+
+<style>
+.profile-picture {
+  width: 60px;
+  height: 60px;
+}
+</style>
