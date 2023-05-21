@@ -1,27 +1,26 @@
-<script>
+<script lang="ts">
+
+import { HtmlHTMLAttributes, PropType } from 'vue';
+import { GenderEnum, UserInfo, Location } from '../types';
+import { stringify } from 'querystring';
+
 export default {
+  name: "ProfileEdit",
+  props: {
+    profileEditProps: Object as PropType<UserInfo>
+  },
+
   data() {
     return {
-      inputProfile: true,
-      name: null,
-      gender: null,
-      university: null,
-      age: null,
-      occupation: null,
-      userImages: [],
-      bio: null,
-      location: {
-        city: null,
-        country: null
-      },
-      preferences: null,
-      preferGender: null,
-      minPreferAge: null,
-      maxPreferAge: null,
-      preferUniversities: [],
-      preferOccupations: [],
-      showImageGallery: false,
-      showImageUpload: false
+      name: undefined as string|undefined,
+      gender: undefined as GenderEnum|undefined|null,
+      university: undefined as string | null | undefined,
+      age: undefined as number|undefined,
+      occupation: undefined as string|undefined|null,
+      userImages: [] as string[],
+      bio: undefined as string|undefined|null,
+      location: {city: "", country: ""} as Location,
+      interestedIn: [] as string[],
     };
   },
   computed: {
@@ -33,40 +32,28 @@ export default {
     }
   },
   methods: {
-    openImageGallery() {
-      this.showImageGallery = true;
-    },
-    openImageUpload() {
-      this.showImageGallery = false;
-      this.showImageUpload = true;
-    },
-    handleUserImagesChange(event) {
-      const files = event.target.files;
-      for (let i = 0; i < files.length; i++) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.userImages.push(e.target.result);
-        };
-        reader.readAsDataURL(files[i]);
-      }
-      this.showImageUpload = false;
-    },
-    toggleInputProfile() {
-      this.inputProfile = !this.inputProfile;
-    },
     saveProfile() {
-      // Handle saving profile logic
-      // Access the updated values in this.name, this.gender, this.university, this.age, this.occupation,
-      // this.userImages, this.bio, this.location, this.preferences, this.preferGender, this.minPreferAge,
-      // this.maxPreferAge, this.preferUniversities, this.preferOccupations
+      return
     }
+  },
+  mounted() {
+    this.name = this.profileEditProps?.name;
+    this.gender = this.profileEditProps?.gender;
+    this.university = this.profileEditProps?.university;
+    this.age = this.profileEditProps?.age ? this.profileEditProps.age : undefined;
+    this.occupation = this.profileEditProps?.occupation;
+    this.userImages = this.profileEditProps?.userImages!;
+    this.bio = this.profileEditProps?.bio;
+    this.location = this.profileEditProps?.location!;
+    this.interestedIn = this.profileEditProps?.interestedIn!;
+    
   }
 };
 </script>
 
 <template>
   <div class="container d-flex justify-content-center align-items-center mt-5">
-    <div class="row">
+    <div class="row mb-5">
       <!--div class="profile-edit-left bg-info">
       <div class="profile-image" @click="openImageGallery">
         <img :src="profileImage" alt="Profile Image">
@@ -132,7 +119,7 @@ export default {
             <form>
               <div class="form-group">
                 <label for="name">Name</label>
-                <input type="text" id="name" v-model="name" class="form-control">
+                <input type="text" id="name" v-model="name" class="form-control" :placeholder="name">
               </div>
               <div class="row">
                 <div class="form-group col-md-6">
@@ -146,29 +133,29 @@ export default {
                 </div>
                 <div class="form-group col-md-6">
                   <label for="age">Age</label>
-                  <input type="number" id="age" v-model="age" class="form-control">
+                  <input type="number" id="age" v-model="age" class="form-control" :placeholder="age?.toString()">
                 </div>
               </div>
               <div class="form-group">
                 <label for="university">University</label>
-                <input type="text" id="university" v-model="university" class="form-control">
+                <input type="text" id="university" v-model="university" class="form-control" :placeholder="university ? university : ''">
               </div>
               <div class="form-group">
                 <label for="occupation">Occupation</label>
-                <input type="text" id="occupation" v-model="occupation" class="form-control">
+                <input type="text" id="occupation" v-model="occupation" class="form-control" :placeholder="occupation ? occupation: ''">
               </div>
               <div class="form-group">
                 <label for="bio">Bio</label>
-                <textarea id="bio" v-model="bio" class="form-control"></textarea>
+                <input id="bio" v-model="bio" class="form-control" :placeholder="bio ? bio : ''">
               </div>
               <div class="row">
                 <div class="form-group col-md-6">
                   <label for="city">City</label>
-                  <input type="text" id="city" v-model="location.city" class="form-control">
+                  <input type="text" id="city" v-model="location.city" class="form-control" :placeholder="location.city ? location.city : '' ">
                 </div>
                 <div class="form-group col-md-6">
                   <label for="country">Country</label>
-                  <input type="text" id="country" v-model="location.country" class="form-control">
+                  <input type="text" id="country" v-model="location.country" class="form-control" :placeholder="location.country ? location.country : ''">
                 </div>
               </div>
             </form>

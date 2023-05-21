@@ -2,7 +2,7 @@
 <script lang="ts">
 
 import userServices from "./services/userServices";
-import { PageStatus, OtherUser, PrivateMessageArgs, Message } from "./types";
+import { PageStatus, UserInfo, PrivateMessageArgs, Message } from "./types";
 import { getBearerToken, getTime, notifyError } from "./utils";
 import Auth from "./views/Auth.vue";
 import InputProfilePage from "./views/InputProfilePage.vue";
@@ -40,15 +40,22 @@ export default {
       userInfo: {
         userID: "",
         name: "",
-        gender: "",
+        gender: null,
         age: null,
+        university: null,
         occupation: null,
-        university: null
-      },
-      recommendsUsers: [] as OtherUser[],
-      matchedUser: [] as OtherUser[],
+        userImages: [],
+        bio: null,
+        location: {
+          city: null,
+          country: null
+        },
+        interestedIn: []
+      } as UserInfo,
+      recommendsUsers: [] as UserInfo[],
+      matchedUser: [] as UserInfo[],
       matchedUserMap: new Map(),
-      selectedUserToChat: null as OtherUser | null,
+      selectedUserToChat: null as UserInfo | null,
       inMemoryCacheChat: new Map<string, Message[]>(),
       countUnreads: new Map<string, number>(),
       recentMessages: new Map<string, string>(),
@@ -76,7 +83,7 @@ export default {
       }
     },
 
-    selectedUserToChat(newVal: OtherUser | null, _oldVal: OtherUser | null) {
+    selectedUserToChat(newVal: UserInfo | null, _oldVal: UserInfo | null) {
       console.log('selected_user_to_chat has changed');
       if (newVal) {
         const partnerUserID_ = newVal.userID;
@@ -115,8 +122,12 @@ export default {
             gender: userData.gender,
             age: userData.age,
             occupation: userData.occupation,
-            university: userData.university
-          }
+            university: userData.university,
+            userImages: userData.userImages,
+            bio: userData.bio,
+            location: userData.location,
+            interestedIn: userData.interestedIn
+          };
           if (!userData.name || !userData.gender) {
             this.pageStatus = PageStatus.InputProfile
           } else {
@@ -213,7 +224,7 @@ export default {
       }
     },
 
-    handleEmittedSelectedUserToChat(value: OtherUser) {
+    handleEmittedSelectedUserToChat(value: UserInfo) {
       this.selectedUserToChat = value;
     },
 
@@ -340,7 +351,7 @@ export default {
         :self-user-i-d="userInfo.userID" :all-messages="inMemoryCacheChat" :count-unreads="countUnreads"
         :recent-messages="recentMessages"
         @emittedSelectedUserToChat="(value) => handleEmittedSelectedUserToChat(value)" />
-      <ProfileEdit v-else-if="pageStatus === 'profileEdit'" />
+      <ProfileEdit v-else-if="pageStatus === 'profileEdit'" :profile-edit-props="userInfo"/>
     </div>
   </div>
 </template>

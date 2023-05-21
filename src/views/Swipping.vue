@@ -2,18 +2,18 @@
 import userServices from "../services/userServices";
 import matchService from "../services/matchedServices";
 import { notifyError } from "./../utils";
-import { OtherUser, MatchingStatus } from "../types";
+import { UserInfo, MatchingStatus } from "../types";
 import socket from "../socket";
 import { faL } from "@fortawesome/free-solid-svg-icons";
 
 export default {
     name: "Swipping",
     props: {
-        recommendedUsersProps: Array<OtherUser>
+        recommendedUsersProps: Array<UserInfo>
     },
     data() {
         return {
-            selectedPartner: null as OtherUser | null,
+            selectedPartner: null as UserInfo | null,
             showModal: "none"
         }
     },
@@ -41,7 +41,7 @@ export default {
 
         removeUserCard(userID: string) {
             this.recommendedUsersProps?.forEach((
-                item: OtherUser, index: number, object: OtherUser[]
+                item: UserInfo, index: number, object: UserInfo[]
             ) => {
                 if (item.userID === userID) {
                     object.splice(index, 1)
@@ -49,7 +49,7 @@ export default {
             });
         },
 
-        openCard(partner: OtherUser) {
+        openCard(partner: UserInfo) {
             console.log(partner)
             this.selectedPartner = partner;
             this.showModal = "inline"

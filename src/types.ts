@@ -31,20 +31,27 @@ interface PrivateMessageArgs {
     fromUserID: string
 }
 
-interface OtherUser {
-    age: number,
-    gender: GenderEnum | null,
-    name: string,
-    occupation: string,
-    university: string,
+interface UserInfo {
     userID: string,
+    name: string,
+    gender: GenderEnum|null,
+    age: number|null,
+    university: string|null,
+    occupation: string|null,
+    userImages: string[],
+    bio: string|null,
+    location: {
+        city: string|null,
+        country: string|null
+    },
+    interestedIn: string[]
 }
 
 enum MatchingStatus {
     await = "await",
-    matched="matched",
-    pass="pass",
-    unmatched="unmatched"
+    matched = "matched",
+    pass = "pass",
+    unmatched = "unmatched"
 }
 
 interface Message {
@@ -52,15 +59,14 @@ interface Message {
     time: string,
     senderID: string,
     isRead: boolean
-  }
-  
+}
 
 export {
     PageStatus,
     GenderEnum,
     type PreferencesType,
     type PrivateMessageArgs,
-    type OtherUser,
+    type UserInfo,
     MatchingStatus,
     type Message,
     type Location

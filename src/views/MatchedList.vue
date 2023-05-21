@@ -1,5 +1,5 @@
 <script lang="ts">
-import { OtherUser, Message } from '../types';
+import { UserInfo, Message } from '../types';
 import socket from '../socket'
 import { getTime } from '../utils';
 import { PropType } from 'vue';
@@ -7,7 +7,7 @@ import { PropType } from 'vue';
 export default {
   name: "MatchedList",
   props: {
-    mathcedListProps: Array<OtherUser>,
+    mathcedListProps: Array<UserInfo>,
     selfName: String,
     selfUserID: String,
     allMessages: Object as PropType<Map<string, Message[]>>,
@@ -19,7 +19,7 @@ export default {
     return {
       newMessage: "" as string,
       userIDtoUserName: new Map(),
-      selectedPartner: null as OtherUser | null,
+      selectedPartner: null as UserInfo | null,
       messages: [] as Message[] | undefined,
     }
   },
@@ -27,7 +27,7 @@ export default {
  
 
   methods: {
-    selectUser(userInfo: OtherUser) {
+    selectUser(userInfo: UserInfo) {
       this.messages = this.allMessages?.get(userInfo.userID);
       this.selectedPartner = userInfo;
       this.$emit("emittedSelectedUserToChat", userInfo)
