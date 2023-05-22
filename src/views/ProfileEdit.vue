@@ -36,9 +36,17 @@ export default {
     saveProfile() {
       return
     },
-    addInterest() {
+    addInterest(): void {
       this.interestedIn.push(this.interestedItem)
       this.interestedItem
+    },
+    clearInterest() {
+      this.interestedIn = []
+    },
+    handleInputBio(event: Event): void {
+      const target = event.target as HTMLInputElement;
+      console.log(target.value)
+      this.bio = target.value;
     }
   },
   mounted() {
@@ -51,7 +59,6 @@ export default {
     this.bio = this.profileEditProps?.bio;
     this.location = this.profileEditProps?.location!;
     this.interestedIn = this.profileEditProps?.interestedIn!;
-
   }
 };
 </script>
@@ -95,23 +102,19 @@ export default {
                 </div>
               </div>
             </div>
-            <h4 class="card-title">{{ "User 1" }}</h4>
-            <h7 class="card-title">{{ "Software Developer" }}, {{ "SMC" }}</h7>
+            <h4 class="card-title">{{ name }}</h4>
+            <h7 class="card-title">{{ occupation }}, {{ "Company" }}</h7>
             <br>
-            <h7 class="card-title">{{ "Chulalongkorn University" }}</h7>
+            <h7 class="card-title">{{ university }}</h7>
             <br>
-            <h9 class="card-title">{{ "age: 26" }}, {{ "Bangkok" }}, {{ "Thailand" }}</h9>
-            <p class="card-text mt-3">Some quick example text to build on the card title and make up the bulk of the
-              card's
-              content.</p>
+            <h9 class="card-title">{{ "age: " + age }} {{ location.city ? `, ${location.city}` : "" }} {{ location.country
+              ? `, ${location.country}` : "" }}</h9>
+            <p class="card-text mt-3">{{ bio }}</p>
             <h9 class="card-title">interested in:</h9>
             <ul class="interested-in">
-              <li>Lorem</li>
-              <li>Praesent</li>
-              <li>Nulla</li>
-              <li>Curabitur</li>
-              <li>Etiam</li>
-              <li>Donec</li>
+              <li v-for="item in interestedIn">
+                {{ item }}
+              </li>
             </ul>
             <div></div>
           </div>
@@ -152,8 +155,8 @@ export default {
                   :placeholder="occupation ? occupation : ''">
               </div>
               <div class="form-group">
-                <label for="bio">Bio</label>
-                <input id="bio" v-model="bio" class="form-control" :placeholder="bio ? bio : ''">
+                <label for="exampleFormControlTextarea1">Bio</label>
+                <textarea class="form-control" id="bio" rows="3" v-on:input="handleInputBio"></textarea>
               </div>
               <div class="row">
                 <div class="form-group col-md-6">
@@ -171,7 +174,8 @@ export default {
                 <label for="interestedIn">interested</label>
                 <div class="d-flex">
                   <input class="form-group me-3" type="text" id="interestedIn" v-model="interestedItem">
-                  <button class="add-button">add</button>
+                  <button class="add-button me-2" @click="addInterest">add</button>
+                  <button class="clear-button" @click="clearInterest">clear</button>
                 </div>
               </div>
             </form>
@@ -187,7 +191,6 @@ export default {
 </template>
 
 <style scoped>
-
 .profile-edit {
   display: flex;
   align-items: flex-start;
@@ -384,6 +387,25 @@ li {
   outline: none;
 }
 
+.clear-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #b40303;
+  color: #ffffff;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.clear-button:hover {
+  background-color: darkred;
+}
+
+.clear-button:focus {
+  outline: none;
+}
+
 @media (max-width: 767px) {
   .profile-edit {
     flex-direction: column;
@@ -408,5 +430,4 @@ li {
   .btn.btn-toggle {
     width: auto;
   }
-}
-</style>
+}</style>
