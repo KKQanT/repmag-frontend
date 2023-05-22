@@ -12,15 +12,16 @@ export default {
 
   data() {
     return {
-      name: undefined as string|undefined,
-      gender: undefined as GenderEnum|undefined|null,
+      name: undefined as string | undefined,
+      gender: undefined as GenderEnum | undefined | null,
       university: undefined as string | null | undefined,
-      age: undefined as number|undefined,
-      occupation: undefined as string|undefined|null,
+      age: undefined as number | undefined,
+      occupation: undefined as string | undefined | null,
       userImages: [] as string[],
-      bio: undefined as string|undefined|null,
-      location: {city: "", country: ""} as Location,
+      bio: undefined as string | undefined | null,
+      location: { city: "", country: "" } as Location,
       interestedIn: [] as string[],
+      interestedItem: "" as string
     };
   },
   computed: {
@@ -34,6 +35,10 @@ export default {
   methods: {
     saveProfile() {
       return
+    },
+    addInterest() {
+      this.interestedIn.push(this.interestedItem)
+      this.interestedItem
     }
   },
   mounted() {
@@ -46,7 +51,7 @@ export default {
     this.bio = this.profileEditProps?.bio;
     this.location = this.profileEditProps?.location!;
     this.interestedIn = this.profileEditProps?.interestedIn!;
-    
+
   }
 };
 </script>
@@ -138,11 +143,13 @@ export default {
               </div>
               <div class="form-group">
                 <label for="university">University</label>
-                <input type="text" id="university" v-model="university" class="form-control" :placeholder="university ? university : ''">
+                <input type="text" id="university" v-model="university" class="form-control"
+                  :placeholder="university ? university : ''">
               </div>
               <div class="form-group">
                 <label for="occupation">Occupation</label>
-                <input type="text" id="occupation" v-model="occupation" class="form-control" :placeholder="occupation ? occupation: ''">
+                <input type="text" id="occupation" v-model="occupation" class="form-control"
+                  :placeholder="occupation ? occupation : ''">
               </div>
               <div class="form-group">
                 <label for="bio">Bio</label>
@@ -151,11 +158,20 @@ export default {
               <div class="row">
                 <div class="form-group col-md-6">
                   <label for="city">City</label>
-                  <input type="text" id="city" v-model="location.city" class="form-control" :placeholder="location.city ? location.city : '' ">
+                  <input type="text" id="city" v-model="location.city" class="form-control"
+                    :placeholder="location.city ? location.city : ''">
                 </div>
                 <div class="form-group col-md-6">
                   <label for="country">Country</label>
-                  <input type="text" id="country" v-model="location.country" class="form-control" :placeholder="location.country ? location.country : ''">
+                  <input type="text" id="country" v-model="location.country" class="form-control"
+                    :placeholder="location.country ? location.country : ''">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="interestedIn">interested</label>
+                <div class="d-flex">
+                  <input class="form-group me-3" type="text" id="interestedIn" v-model="interestedItem">
+                  <button class="add-button">add</button>
                 </div>
               </div>
             </form>
@@ -171,6 +187,7 @@ export default {
 </template>
 
 <style scoped>
+
 .profile-edit {
   display: flex;
   align-items: flex-start;
@@ -346,6 +363,25 @@ li {
   text-align: center;
   margin-right: 20px;
   list-style: none;
+}
+
+.add-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #296aeb;
+  color: #ffffff;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-button:hover {
+  background-color: #121ac0;
+}
+
+.add-button:focus {
+  outline: none;
 }
 
 @media (max-width: 767px) {
