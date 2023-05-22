@@ -43,6 +43,13 @@ export default {
     clearInterest() {
       this.interestedIn = []
     },
+    removeInterested(item: string) {
+      const index = this.interestedIn.indexOf(item);
+      if (index !== -1) {
+        this.interestedIn.splice(index,1)
+      } 
+    }
+    ,
     handleInputBio(event: Event): void {
       const target = event.target as HTMLInputElement;
       console.log(target.value)
@@ -112,8 +119,9 @@ export default {
             <p class="card-text mt-3">{{ bio }}</p>
             <h9 class="card-title">interested in:</h9>
             <ul class="interested-in">
-              <li v-for="item in interestedIn">
-                {{ item }}
+              <li v-for="item in interestedIn" class="list-card">
+                  <span class="close-button" >x</span>
+                  {{ item }}
               </li>
             </ul>
             <div></div>
@@ -191,6 +199,22 @@ export default {
 </template>
 
 <style scoped>
+.list-card {
+  position: relative;
+  background-color: hsl(0, 0%, 91%);
+  padding: 5px 20px 5px 20px
+}
+
+.close-button {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  cursor: pointer;
+  font-size: small;
+  color: black;
+  padding-right: 4px;
+}
+
 .profile-edit {
   display: flex;
   align-items: flex-start;
@@ -430,4 +454,5 @@ li {
   .btn.btn-toggle {
     width: auto;
   }
-}</style>
+}
+</style>
