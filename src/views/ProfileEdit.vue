@@ -193,7 +193,7 @@ export default {
               <div class="row">
                 <div class="form-group col-md-6">
                   <label for="gender">Gender</label>
-                  <select id="gender" v-model="gender" class="form-control">
+                  <select id="gender" v-model="gender" class="form-control" :disabled="!isFirst">
                     <option value="" disabled selected>Select Gender</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
@@ -203,7 +203,9 @@ export default {
                 <div class="form-group col-md-6">
                   <label for="birthDate">Birthdate</label>
                   <input type="date" id="birthDate" v-model="birthDateString" class="form-control"
-                    :placeholder="birthDateString ? birthDateString : ''">
+                    :placeholder="birthDateString ? birthDateString : ''"
+                    :disabled="!isFirst"
+                    >
                 </div>
               </div>
               <div class="form-group">
