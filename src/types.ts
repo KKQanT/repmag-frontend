@@ -35,9 +35,10 @@ interface UserInfo {
     userID: string,
     name: string,
     gender: GenderEnum|null,
-    age: number|null,
+    birthdate: Date|null,
     university: string|null,
     occupation: string|null,
+    company: string|null,
     userImages: string[],
     bio: string|null,
     location: {

@@ -23,3 +23,27 @@ export const getTime = ()  => {
         });
     return dateTimeString
 }
+
+export function calculateAge(birthDate) {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const birthYear = birthDate.getFullYear();
+  
+    let age = currentYear - birthYear;
+  
+    const currentMonth = currentDate.getMonth();
+    const birthMonth = birthDate.getMonth();
+  
+    if (currentMonth < birthMonth) {
+      age--;
+    } else if (currentMonth === birthMonth) {
+      const currentDay = currentDate.getDate();
+      const birthDay = birthDate.getDate();
+  
+      if (currentDay < birthDay) {
+        age--;
+      }
+    }
+  
+    return age;
+  }

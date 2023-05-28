@@ -13,7 +13,7 @@ export default {
       name: null as string | null,
       gender: null as GenderEnum | null,
       university: null as string | null,
-      age: null as number | null,
+      date: null as Date|null,
       occupation: null as string | null,
       userImages: [] as string[],
       bio: null as string | null,
@@ -38,7 +38,7 @@ export default {
     async onSubmit() {
       if (
         this.name && this.gender && this.university &&
-        this.age && this.occupation
+        this.date && this.occupation
       ) {
         this.preferences = {
           gender: this.preferGender,
@@ -47,7 +47,7 @@ export default {
           occupations: this.preferOccupations
         }
         const resp = await userServices.updateUserInfo(
-          this.name, this.gender, this.university, this.age,
+          this.name, this.gender, this.university, this.date,
           this.occupation, this.preferences
         )
         this.$emit("emittedPageStatus", "swipping")
@@ -99,8 +99,8 @@ export default {
             </select>
           </div>
           <div class="mb-3">
-            <label for="age" class="form-label">Age</label>
-            <input type="number" class="form-control" id="age" v-model="age">
+            <label for="date" class="form-label">Birth Date</label>
+            <input type="date" class="form-control" id="date" v-model="date">
           </div>
           <div class="mb-3">
             <label for="university" class="form-label">university</label>

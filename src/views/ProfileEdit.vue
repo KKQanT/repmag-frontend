@@ -3,10 +3,14 @@
 import { HtmlHTMLAttributes, PropType } from 'vue';
 import { GenderEnum, UserInfo, Location } from '../types';
 import { stringify } from 'querystring';
+import { calculateAge } from "../utils";
+import userServices from '../services/userServices';
+import { event } from 'jquery';
 
 export default {
   name: "ProfileEdit",
   props: {
+    isFirst: Boolean,
     profileEditProps: Object as PropType<UserInfo>
   },
 
@@ -15,13 +19,16 @@ export default {
       name: undefined as string | undefined,
       gender: undefined as GenderEnum | undefined | null,
       university: undefined as string | null | undefined,
-      age: undefined as number | undefined,
+      birthDate: undefined as Date | null | undefined,
       occupation: undefined as string | undefined | null,
+      company: undefined as string | undefined | null,
       userImages: [] as string[],
       bio: undefined as string | undefined | null,
       location: { city: "", country: "" } as Location,
       interestedIn: [] as string[],
-      interestedItem: "" as string
+      interestedItem: "" as string,
+      age: null as null | number,
+      birthDateString: null as null | string,
     };
   },
   computed: {
@@ -30,15 +37,54 @@ export default {
     },
     remainingImages() {
       return Math.max(0, 5 - this.userImages.length);
+    },
+    getAge() {
+      console.log(this.birthDate)
+      if (this.birthDate) {
+        return calculateAge(this.birthDate)
+      } else {
+        return 0
+      }
+    }
+  },
+  watch: {
+    birthDateString(newVal, _oldVal) {
+      if (newVal) {
+        this.birthDate = new Date(this.birthDateString!)
+      }
     }
   },
   methods: {
     saveProfile() {
-      return
+      if (
+        this.name && this.gender && this.birthDate && this.location
+      ) {
+        userServices.updateUserInfo(
+          this.name,
+          this.gender,
+          //@ts-ignore
+          this.university,
+          this.birthDate,
+          this.occupation,
+          this.company,
+          this.bio,
+          this.location,
+          this.interestedIn
+        )
+        if (this.isFirst) {
+          this.$emit("emittedSwitchPage", "");
+        }
+        //button loading
+      } else {
+        //display red text
+      }
     },
     addInterest(): void {
+      console.log('addInterest')
       this.interestedIn.push(this.interestedItem)
-      this.interestedItem
+      this.interestedItem = "";
+      (this.$refs.interestInput as HTMLInputElement).value = ''
+
     },
     clearInterest() {
       this.interestedIn = []
@@ -46,26 +92,32 @@ export default {
     removeInterested(item: string) {
       const index = this.interestedIn.indexOf(item);
       if (index !== -1) {
-        this.interestedIn.splice(index,1)
-      } 
+        this.interestedIn.splice(index, 1)
+      }
     }
     ,
     handleInputBio(event: Event): void {
       const target = event.target as HTMLInputElement;
       console.log(target.value)
       this.bio = target.value;
+    },
+    onChangeInterested(event: Event): void {
+      const target = event.target as HTMLInputElement;
+      this.interestedItem = target.value;
     }
   },
   mounted() {
     this.name = this.profileEditProps?.name;
     this.gender = this.profileEditProps?.gender;
+    this.birthDate = this.profileEditProps?.birthdate;
     this.university = this.profileEditProps?.university;
-    this.age = this.profileEditProps?.age ? this.profileEditProps.age : undefined;
-    this.occupation = this.profileEditProps?.occupation;
+    this.occupation = this.profileEditProps?.occupation
+    this.company = this.profileEditProps?.company;
     this.userImages = this.profileEditProps?.userImages!;
     this.bio = this.profileEditProps?.bio;
     this.location = this.profileEditProps?.location!;
-    this.interestedIn = this.profileEditProps?.interestedIn!;
+    this.interestedIn = [...this.profileEditProps?.interestedIn!];
+    this.birthDateString = this.birthDate ? this.birthDate.toDateString() : "";
   }
 };
 </script>
@@ -110,18 +162,19 @@ export default {
               </div>
             </div>
             <h4 class="card-title">{{ name }}</h4>
-            <h7 class="card-title">{{ occupation }}, {{ "Company" }}</h7>
+            <h7 class="card-title">{{ occupation }} {{ company ? ", " + company : "" }}</h7>
             <br>
             <h7 class="card-title">{{ university }}</h7>
             <br>
-            <h9 class="card-title">{{ "age: " + age }} {{ location.city ? `, ${location.city}` : "" }} {{ location.country
+            <h9 class="card-title">{{ getAge ? "age: " + getAge : "" }} {{ location.city ? `, ${location.city}` : "" }} {{
+              location.country
               ? `, ${location.country}` : "" }}</h9>
             <p class="card-text mt-3">{{ bio }}</p>
-            <h9 class="card-title">interested in:</h9>
+            <h9 class="card-title">{{ interestedIn.length > 0 ? "interested in:" : "" }}</h9>
             <ul class="interested-in">
               <li v-for="item in interestedIn" class="list-card">
-                  <span class="close-button" >x</span>
-                  {{ item }}
+                <span class="close-button" @click="removeInterested(item)">x</span>
+                {{ item }}
               </li>
             </ul>
             <div></div>
@@ -131,7 +184,7 @@ export default {
       <div class="col-lg-6 d-flex align-items-stretch justify-content-center">
         <div class="card" style="width: 25rem;">
           <div class="card-body">
-            <h5 class="card-title">Edit Profile</h5>
+            <h5 v-if="!isFirst" class="card-title">Edit Profile</h5>
             <form>
               <div class="form-group">
                 <label for="name">Name</label>
@@ -148,8 +201,9 @@ export default {
                   </select>
                 </div>
                 <div class="form-group col-md-6">
-                  <label for="age">Age</label>
-                  <input type="number" id="age" v-model="age" class="form-control" :placeholder="age?.toString()">
+                  <label for="birthDate">Birthdate</label>
+                  <input type="date" id="birthDate" v-model="birthDateString" class="form-control"
+                    :placeholder="birthDateString ? birthDateString : ''">
                 </div>
               </div>
               <div class="form-group">
@@ -157,14 +211,21 @@ export default {
                 <input type="text" id="university" v-model="university" class="form-control"
                   :placeholder="university ? university : ''">
               </div>
-              <div class="form-group">
-                <label for="occupation">Occupation</label>
-                <input type="text" id="occupation" v-model="occupation" class="form-control"
-                  :placeholder="occupation ? occupation : ''">
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="occupation">Occupation</label>
+                  <input type="text" id="occupation" v-model="occupation" class="form-control"
+                    :placeholder="occupation ? occupation : ''">
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="company">Company</label>
+                  <input type="text" id="company" v-model="company" class="form-control"
+                    :placeholder="company ? company : ''">
+                </div>
               </div>
               <div class="form-group">
                 <label for="exampleFormControlTextarea1">Bio</label>
-                <textarea class="form-control" id="bio" rows="3" v-on:input="handleInputBio"></textarea>
+                <textarea class="form-control" id="bio" rows="3" v-on:input="handleInputBio">{{ bio }}</textarea>
               </div>
               <div class="row">
                 <div class="form-group col-md-6">
@@ -178,18 +239,19 @@ export default {
                     :placeholder="location.country ? location.country : ''">
                 </div>
               </div>
-              <div class="form-group">
-                <label for="interestedIn">interested</label>
-                <div class="d-flex">
-                  <input class="form-group me-3" type="text" id="interestedIn" v-model="interestedItem">
-                  <button class="add-button me-2" @click="addInterest">add</button>
-                  <button class="clear-button" @click="clearInterest">clear</button>
-                </div>
-              </div>
             </form>
+            <div class="form-group">
+              <label for="interestedIn">interested</label>
+              <div class="d-flex">
+                <input class="form-group me-3" type="text" id="interestedIn" ref="interestInput"
+                  v-on:change="onChangeInterested">
+                <button class="add-button me-2" @click="addInterest">add</button>
+                <button class="clear-button" @click="clearInterest">clear</button>
+              </div>
+            </div>
           </div>
-          <div class="card-footer text-right">
-            <button class="btn btn-primary" @click="saveProfile">Save</button>
+          <div class="card-footer text-right d-flex justify-content-center align-items-center">
+            <button class="btn btn-primary w-50 mt-0" @click="saveProfile">Save</button>
           </div>
         </div>
       </div>

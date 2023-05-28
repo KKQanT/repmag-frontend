@@ -12,7 +12,6 @@ import Swipping from "./views/Swipping.vue"
 import { createToast } from "mosha-vue-toastify";
 import MatchedList from "./views/MatchedList.vue";
 import chatServices from "./services/chatServices";
-import { data } from "jquery";
 import Loading from "./views/Loading.vue";
 import ProfileEdit from "./views/ProfileEdit.vue";
 
@@ -41,9 +40,10 @@ export default {
         userID: "",
         name: "",
         gender: null,
-        age: null,
+        birthdate: null,
         university: null,
         occupation: null,
+        company: null,
         userImages: [],
         bio: null,
         location: {
@@ -78,6 +78,8 @@ export default {
     },
 
     pageStatus(newVal: string, oldVal: string) {
+      console.log(newVal)
+      console.log("pageStatus invoked");
       if ((oldVal === PageStatus.InputProfile) && (newVal === PageStatus.Swipping)) {
         this.getRecommendedUsers()
       }
@@ -120,8 +122,9 @@ export default {
             userID: userData.userID,
             name: userData.name,
             gender: userData.gender,
-            age: userData.age,
+            birthdate: userData.birthdate,
             occupation: userData.occupation,
+            company: userData.company,
             university: userData.university,
             userImages: userData.userImages,
             bio: userData.bio,
@@ -144,6 +147,7 @@ export default {
     },
 
     async setUpPageWithLoading() {
+      console.log('setUpPageWithLoading')
       try {
         this.switchPage(PageStatus.Loading);
         await this.setUpPage()
@@ -316,7 +320,12 @@ export default {
 <template>
   <Loading v-if="pageStatus === 'loading'" />
   <Auth @emittedLoggedIn="(value) => loginSignal = value" v-else-if='pageStatus === "auth"' />
-  <InputProfilePage @emittedPageStatus="(value) => pageStatus = value" v-else-if='pageStatus === "inputProfile"' />
+  <div class="container" v-else-if="pageStatus === 'inputProfile'">
+    <div class="p-3 m-5 text-center">
+      <h1>Tell your partner about yourself</h1>
+    </div>
+    <ProfileEdit @emittedSwitchPage="(_value) => switchPage('swipping')" :profile-edit-props="userInfo" :is-first="true"/>
+  </div>
   <div v-else>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand ms-3" href="#">Your Logo</a>
@@ -351,7 +360,7 @@ export default {
         :self-user-i-d="userInfo.userID" :all-messages="inMemoryCacheChat" :count-unreads="countUnreads"
         :recent-messages="recentMessages"
         @emittedSelectedUserToChat="(value) => handleEmittedSelectedUserToChat(value)" />
-      <ProfileEdit v-else-if="pageStatus === 'profileEdit'" :profile-edit-props="userInfo"/>
+      <ProfileEdit v-else-if="pageStatus === 'profileEdit'" :profile-edit-props="userInfo" :is-first="false" />
     </div>
   </div>
 </template>
