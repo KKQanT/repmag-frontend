@@ -5,7 +5,6 @@ import userServices from "./services/userServices";
 import { PageStatus, UserInfo, PrivateMessageArgs, Message } from "./types";
 import { getBearerToken, getTime, notifyError } from "./utils";
 import Auth from "./views/Auth.vue";
-import InputProfilePage from "./views/InputProfilePage.vue";
 import socket from "./socket";
 import matchServices from "./services/matchedServices";
 import Swipping from "./views/Swipping.vue"
@@ -24,7 +23,6 @@ export default {
   name: "App",
   components: {
     Auth,
-    InputProfilePage,
     Swipping,
     MatchedList,
     Loading,
@@ -169,7 +167,7 @@ export default {
     async getRecommendedUsers() {
       const resp = await userServices.getRecomendedUsers();
       if (resp.status === 200) {
-        this.recommendsUsers = resp.data;
+        this.recommendsUsers = [...resp.data, ...resp.data, ...resp.data, ...resp.data];
       }
     },
 

@@ -177,7 +177,6 @@ export default {
                 {{ item }}
               </li>
             </ul>
-            <div></div>
           </div>
         </div>
       </div>
