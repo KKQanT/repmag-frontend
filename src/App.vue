@@ -167,7 +167,7 @@ export default {
     async getRecommendedUsers() {
       const resp = await userServices.getRecomendedUsers();
       if (resp.status === 200) {
-        this.recommendsUsers = [...resp.data, ...resp.data, ...resp.data, ...resp.data];
+        this.recommendsUsers = resp.data
       }
     },
 

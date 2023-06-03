@@ -29,22 +29,39 @@ class userServices {
         bio: string|null,
         location: Location,
         interestedIn: string[],
+        isFirst: boolean
     ) {
-        return axios.post(BASE_API + "/user/updateUserData", {
-            name: name, 
-            gender: gender, 
-            university: university,
-            birthDate: birthDate,
-            occupation: occupation,
-            company: company,
-            userImages: "",
-            bio: bio,
-            location: location,
-            interestedIn: interestedIn,
-        },
-        {
-            headers: {authorization: getBearerToken()}
-        })
+        if (isFirst) {
+            return axios.post(BASE_API + "/user/updateUserData", {
+                name: name, 
+                gender: gender, 
+                university: university,
+                birthdate: birthDate,
+                occupation: occupation,
+                company: company,
+                userImages: "",
+                bio: bio,
+                location: location,
+                interestedIn: interestedIn,
+            },
+            {
+                headers: {authorization: getBearerToken()}
+            })
+        } else {
+            return axios.post(BASE_API + "/user/updateUserData", {
+                name: name, 
+                university: university,
+                occupation: occupation,
+                company: company,
+                userImages: "",
+                bio: bio,
+                location: location,
+                interestedIn: interestedIn,
+            },
+            {
+                headers: {authorization: getBearerToken()}
+            })
+        }
     }
 
     getSelfProfile() {

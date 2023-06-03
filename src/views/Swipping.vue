@@ -1,7 +1,7 @@
 <script lang="ts">
 import userServices from "../services/userServices";
 import matchService from "../services/matchedServices";
-import { notifyError } from "./../utils";
+import { calculateAge, notifyError } from "./../utils";
 import { UserInfo, MatchingStatus } from "../types";
 import socket from "../socket";
 import { faL } from "@fortawesome/free-solid-svg-icons";
@@ -18,7 +18,8 @@ export default {
   data() {
     return {
       selectedPartner: null as UserInfo | null,
-      showModal: false
+      showModal: false,
+      age: 0,
     }
   },
   methods: {
@@ -56,12 +57,30 @@ export default {
     openCard(partner: UserInfo) {
       console.log(partner)
       this.selectedPartner = partner;
+      if (partner.birthdate) {
+        this.age = calculateAge(new Date(partner.birthdate!));
+      }
       this.showModal = true
     },
 
     closeCard() {
       this.selectedPartner = null;
       this.showModal = false
+    },
+
+    getAndParseAge(partner: UserInfo) {
+      return calculateAge(new Date(partner.birthdate!)).toString()
+    },
+
+    getLocation(partner: UserInfo) {
+      if (partner.location) {
+        console.log(partner.location)
+        const city =  partner.location.city ? partner.location.city : "-" 
+        const country =  partner.location.country ? partner.location.country : "-"
+        return city + ', ' + country
+      } else {
+        return "-, -"
+      }
     }
   },
 }
@@ -76,33 +95,15 @@ export default {
         <img src="/download.jpg" alt="partner img" class="img-fluid">
         <div class="card-body">
           <h5 class="card-title">{{ partner.name }}</h5>
-          <p>{{ partner.occupation }}</p>
-          <p>{{ partner.university }}</p>
+          <p>
+            {{ partner.occupation ? partner.occupation : "-"}}<br>
+            {{ partner.university ? partner.university : "-" }} <br>
+            {{ `age: ${getAndParseAge(partner)}` }} {{ "location: " + getLocation(partner) }}
+          </p>
         </div>
       </div>
     </div>
   </div>
-
-  <!--modal class="modal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">{{ selectedPartner?.name }}</h5>
-					<button type="button" class="btn-close" @click="closeCard">
-					</button>
-				</div>
-				<div class="modal-body">
-					<img src="/download.jpg" alt="partner img" class="full-card-img">
-					<p class="full-card-info">University: {{ selectedPartner?.university }}</p>
-					<p class="full-card-info">Occupation: {{ selectedPartner?.occupation }}</p>
-				</div>
-				<div class="modal-footer">
-					<button class="btn btn-danger" @click="() => passUser(selectedPartner!.userID)">pass</button>
-					<button class="btn btn-success" @click="() => likeUser(selectedPartner!.userID)">like</button>
-				</div>
-			</div>
-		</div>
-	</modal-->
   <div class="modal" :class="{ 'show': showModal }">
     <div class="modal-dialog modal-md">
       <div class="modal-content">
@@ -114,7 +115,7 @@ export default {
         </div>
         <div class="modal-body">
           <div class="container">
-            <ProfileCard />
+            <ProfileCard :user-info="selectedPartner!" :age="age" />
           </div>
         </div>
       </div>

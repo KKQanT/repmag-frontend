@@ -19,7 +19,7 @@ export default {
       name: undefined as string | undefined,
       gender: undefined as GenderEnum | undefined | null,
       university: undefined as string | null | undefined,
-      birthDate: undefined as Date | null | undefined,
+      birthdate: undefined as Date | null | undefined,
       occupation: undefined as string | undefined | null,
       company: undefined as string | undefined | null,
       userImages: [] as string[],
@@ -28,7 +28,8 @@ export default {
       interestedIn: [] as string[],
       interestedItem: "" as string,
       age: null as null | number,
-      birthDateString: null as null | string,
+      birthdateString: null as null | string,
+      
     };
   },
   computed: {
@@ -39,37 +40,38 @@ export default {
       return Math.max(0, 5 - this.userImages.length);
     },
     getAge() {
-      console.log(this.birthDate)
-      if (this.birthDate) {
-        return calculateAge(this.birthDate)
+      console.log(this.birthdate)
+      if (this.birthdate) {
+        return calculateAge(this.birthdate)
       } else {
         return 0
       }
     }
   },
   watch: {
-    birthDateString(newVal, _oldVal) {
+    birthdateString(newVal, _oldVal) {
       if (newVal) {
-        this.birthDate = new Date(this.birthDateString!)
+        this.birthdate = new Date(this.birthdateString!)
       }
     }
   },
   methods: {
     saveProfile() {
       if (
-        this.name && this.gender && this.birthDate && this.location
+        this.name && this.gender && this.birthdate && this.location
       ) {
         userServices.updateUserInfo(
           this.name,
           this.gender,
           //@ts-ignore
           this.university,
-          this.birthDate,
+          this.birthdate,
           this.occupation,
           this.company,
           this.bio,
           this.location,
-          this.interestedIn
+          this.interestedIn,
+          true
         )
         if (this.isFirst) {
           this.$emit("emittedSwitchPage", "");
@@ -109,7 +111,7 @@ export default {
   mounted() {
     this.name = this.profileEditProps?.name;
     this.gender = this.profileEditProps?.gender;
-    this.birthDate = this.profileEditProps?.birthdate;
+    this.birthdate = this.profileEditProps?.birthdate;
     this.university = this.profileEditProps?.university;
     this.occupation = this.profileEditProps?.occupation
     this.company = this.profileEditProps?.company;
@@ -117,7 +119,7 @@ export default {
     this.bio = this.profileEditProps?.bio;
     this.location = this.profileEditProps?.location!;
     this.interestedIn = [...this.profileEditProps?.interestedIn!];
-    this.birthDateString = this.birthDate ? this.birthDate.toDateString() : "";
+    this.birthdateString = this.birthdate ? new Date(this.birthdate).toDateString() : "";
   }
 };
 </script>
@@ -125,30 +127,6 @@ export default {
 <template>
   <div class="container d-flex justify-content-center align-items-center mt-5">
     <div class="row mb-5">
-      <!--div class="profile-edit-left bg-info">
-      <div class="profile-image" @click="openImageGallery">
-        <img :src="profileImage" alt="Profile Image">
-        <div class="image-overlay">
-          <span>Click to View Images</span>
-        </div>
-      </div>
-      <div class="image-gallery" v-if="showImageGallery">
-        <div class="gallery-item" v-for="(image, index) in userImages" :key="index">
-          <img :src="image" alt="User Image">
-        </div>
-        <div class="gallery-item" v-for="index in remainingImages" :key="index" @click="openImageUpload">
-          <div class="upload-icon">
-            <i class="fas fa-plus"></i>
-          </div>
-        </div>
-      </div>
-      <div class="image-upload" v-if="showImageUpload">
-        <input type="file" accept="image/*" @change="handleUserImagesChange">
-        <div class="upload-instructions">
-          <span>Click to Upload Image</span>
-        </div>
-      </div>
-    </div-->
       <div class="col-lg-6 d-flex align-items-stretch">
         <div class="card" style="width: 25rem;">
           <div class="card-body">
@@ -200,10 +178,9 @@ export default {
                   </select>
                 </div>
                 <div class="form-group col-md-6">
-                  <label for="birthDate">Birthdate</label>
-                  <input type="date" id="birthDate" v-model="birthDateString" class="form-control"
-                    :placeholder="birthDateString ? birthDateString : ''"
-                    :disabled="!isFirst"
+                  <label for="birthdate">birthdate</label>
+                  <input type="date" id="birthdate" v-model="birthdateString" class="form-control"
+                    :placeholder="birthdateString ? birthdateString : ''"
                     >
                 </div>
               </div>

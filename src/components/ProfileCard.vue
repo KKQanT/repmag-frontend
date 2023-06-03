@@ -1,14 +1,20 @@
 <script lang="ts">
+import {  PropType } from 'vue';
+import {  UserInfo } from '../types';
+import { calculateAge } from '../utils';
+
 export default {
   name: "ProfileCard",
-
+  props: {
+    userInfo: Object as PropType<UserInfo>,
+    age: Number
+  },
   data() {
     return {
       name: 'John Doe',
       occupation: 'Developer',
       company: 'OpenAI',
       university: 'University of AI',
-      getAge: 30,
       location: {
         city: 'San Francisco',
         country: 'USA'
@@ -16,6 +22,20 @@ export default {
       bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
       interestedIn: ['Programming', 'Artificial Intelligence', 'Machine Learning']
     };
+  },
+
+  methods: {
+    parseInfo(info: any) {
+      return info ? info : "-"
+    },
+
+    getAge(birthdate: Date|null|undefined) {
+      if (birthdate) {
+        return calculateAge(birthdate)!.toString()
+      } else {
+        return ""
+      }
+    }
   },
 
 };
@@ -32,17 +52,17 @@ export default {
           </div>
         </div>
       </div>
-      <h4 class="card-title">{{ name }}</h4>
-      <h7 class="card-title">{{ occupation }}{{ company ? ', ' + company : '' }}</h7>
+      <h4 class="card-title">{{ parseInfo(userInfo?.name) }}</h4>
+      <h7 class="card-title">{{ parseInfo(userInfo?.occupation) }}{{ userInfo?.company ? ', ' + parseInfo(userInfo?.company) : '' }}</h7>
       <br>
-      <h7 class="card-title">{{ university }}</h7>
+      <h7 class="card-title">{{ parseInfo(userInfo?.university) }}</h7>
       <br>
-      <h9 class="card-title">{{ getAge ? 'age: ' + getAge : '' }}{{ location.city ? ', ' + location.city : '' }}{{
-        location.country ? ', ' + location.country : '' }}</h9>
-      <p class="card-text mt-3">{{ bio }}</p>
-      <h9 class="card-title" v-if="interestedIn.length > 0">interested in:</h9>
+      <h9 class="card-title">{{ age ? 'age: ' + age?.toString() : '' }}{{ userInfo?.location.city ? ', ' + parseInfo(userInfo.location.city) : '' }}{{
+        userInfo?.location.country ? ', ' + parseInfo(userInfo?.location.country) : '' }}</h9>
+      <p class="card-text mt-3">{{ parseInfo(userInfo?.bio) }}</p>
+      <h9 class="card-title" v-if="(userInfo) && (userInfo.interestedIn.length > 0)">interested in:</h9>
       <ul class="interested-in">
-        <li v-for="item in interestedIn" :key="item" class="list-card">
+        <li v-for="item in userInfo?.interestedIn" :key="item" class="list-card">
           {{ item }}
         </li>
       </ul>
