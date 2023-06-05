@@ -1,17 +1,23 @@
 <script lang="ts">
 
 import { HtmlHTMLAttributes, PropType } from 'vue';
-import { GenderEnum, UserInfo, Location } from '../types';
+import { GenderEnum, UserInfo, Location, UserImage } from '../types';
 import { stringify } from 'querystring';
 import { calculateAge } from "../utils";
 import userServices from '../services/userServices';
 import { event } from 'jquery';
+import UserImagesPanel from '../components/UserImagesPanel.vue';
+import imageService from '../services/imageService';
+import {preprocessImgData} from "../utils";
 
 export default {
   name: "ProfileEdit",
   props: {
     isFirst: Boolean,
     profileEditProps: Object as PropType<UserInfo>
+  },
+  components: {
+    UserImagesPanel
   },
 
   data() {
@@ -22,19 +28,26 @@ export default {
       birthdate: undefined as Date | null | undefined,
       occupation: undefined as string | undefined | null,
       company: undefined as string | undefined | null,
-      userImages: [] as string[],
       bio: undefined as string | undefined | null,
       location: { city: "", country: "" } as Location,
       interestedIn: [] as string[],
       interestedItem: "" as string,
       age: null as null | number,
       birthdateString: null as null | string,
-      
+      userImages: [
+        { url: '/img1.png', order: 0 },
+        { url: '/img2.png', order: 1 },
+        { url: '/download.jpg', order: 2 },
+        { url: '/download.jpg', order: 3 },
+        { url: '/download.jpg', order: 4 },
+      ] as UserImage[],
+      showModal: false as boolean,
+      testImg: "/download.jpg" as string
     };
   },
   computed: {
     profileImage() {
-      return this.userImages.length > 0 ? this.userImages[0] : 'placeholder.png';
+      return this.userImages.length > 0 ? this.userImages[0].url : 'placeholder.png';
     },
     remainingImages() {
       return Math.max(0, 5 - this.userImages.length);
@@ -53,6 +66,10 @@ export default {
       if (newVal) {
         this.birthdate = new Date(this.birthdateString!)
       }
+    },
+    showModal(newVal, _oldVal) {
+      console.log('show modal')
+      console.log(newVal)
     }
   },
   methods: {
@@ -106,6 +123,13 @@ export default {
     onChangeInterested(event: Event): void {
       const target = event.target as HTMLInputElement;
       this.interestedItem = target.value;
+    },
+    async queryImage() {
+      const resp = await imageService.queryImage("test.png");
+      const data = resp.data;
+      const img  = preprocessImgData(resp.data);
+      console.log("img", img)
+      this.testImg = img;
     }
   },
   mounted() {
@@ -115,11 +139,11 @@ export default {
     this.university = this.profileEditProps?.university;
     this.occupation = this.profileEditProps?.occupation
     this.company = this.profileEditProps?.company;
-    this.userImages = this.profileEditProps?.userImages!;
     this.bio = this.profileEditProps?.bio;
     this.location = this.profileEditProps?.location!;
     this.interestedIn = [...this.profileEditProps?.interestedIn!];
     this.birthdateString = this.birthdate ? new Date(this.birthdate).toDateString() : "";
+    this.queryImage();
   }
 };
 </script>
@@ -133,8 +157,8 @@ export default {
             <h5 class="card-title">Preview</h5>
             <div class="d-flex justify-content-center align-items-center">
               <div class="profile-image">
-                <img class="card-img-top mb-3" :src="'/download.jpg'" alt="Profile Image">
-                <div class="image-overlay">
+                <img class="card-img-top mb-3" :src="testImg" alt="Profile Image">
+                <div class="image-overlay" @click="showModal=!showModal">
                   Upload new image
                 </div>
               </div>
@@ -180,8 +204,7 @@ export default {
                 <div class="form-group col-md-6">
                   <label for="birthdate">birthdate</label>
                   <input type="date" id="birthdate" v-model="birthdateString" class="form-control"
-                    :placeholder="birthdateString ? birthdateString : ''"
-                    >
+                    :placeholder="birthdateString ? birthdateString : ''">
                 </div>
               </div>
               <div class="form-group">
@@ -234,8 +257,24 @@ export default {
         </div>
       </div>
     </div>
-
   </div>
+  <div class="modal" :class="{ 'show': showModal }">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Your uploaded images</h5>
+            <button type="button" class="close" @click="showModal=false">
+            <span>&times;</span>
+          </button>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+              <UserImagesPanel :user-images="userImages"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 </template>
 
 <style scoped>
@@ -494,5 +533,9 @@ li {
   .btn.btn-toggle {
     width: auto;
   }
+}
+
+.modal.show {
+  display: block;
 }
 </style>

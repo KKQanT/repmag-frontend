@@ -119,9 +119,6 @@ export default {
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary">Close</button>
-      </div>
     </div>
   </div>
 </template>

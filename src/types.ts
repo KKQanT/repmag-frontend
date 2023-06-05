@@ -39,7 +39,6 @@ interface UserInfo {
     university: string|null,
     occupation: string|null,
     company: string|null,
-    userImages: string[],
     bio: string|null,
     location: {
         city: string|null,
@@ -62,6 +61,11 @@ interface Message {
     isRead: boolean
 }
 
+interface UserImage {
+    url: string,
+    order: number
+}
+
 export {
     PageStatus,
     GenderEnum,
@@ -70,5 +74,6 @@ export {
     type UserInfo,
     MatchingStatus,
     type Message,
-    type Location
+    type Location,
+    type UserImage
 };

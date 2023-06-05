@@ -51,3 +51,20 @@ export function calculateAge(birthDate: Date) {
     return 0
   }
 }
+
+export function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  let binary = '';
+  console.log('buffer', buffer)
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}
+
+export function preprocessImgData(respData): string {
+  const base64Flag = 'data:image/jpeg;base64,';
+  const imgStr = arrayBufferToBase64(respData.data.data);
+  return base64Flag + imgStr
+}
