@@ -35,11 +35,15 @@ export default {
       age: null as null | number,
       birthdateString: null as null | string,
       userImages: [
-        { url: '/img1.png', order: 0 },
+        { url: '/img2.png', order: 0 },
         { url: '/img2.png', order: 1 },
         { url: '/download.jpg', order: 2 },
         { url: '/download.jpg', order: 3 },
         { url: '/download.jpg', order: 4 },
+        { url: '/img1.png', order: 0 },
+        { url: '/img2.png', order: 1 },
+        { url: '/download.jpg', order: 2 },
+        { url: '/download.jpg', order: 3 },
       ] as UserImage[],
       showModal: false as boolean,
       testImg: "/download.jpg" as string
