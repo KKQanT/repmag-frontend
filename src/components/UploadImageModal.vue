@@ -2,11 +2,17 @@
 import ImageService from '../services/imageService';
 import { Cropper, CropperResult } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
+import { RawUserImageData, ImageUploadImage } from '../types';
+import { PropType } from 'vue';
+import { AxiosResponse } from 'axios';
 
 export default {
   name: "UploadImageModal",
   components: {
     Cropper
+  },
+  props: {
+    selectedImage: Object as PropType<ImageUploadImage>,
   },
   data() {
     return {
@@ -31,18 +37,25 @@ export default {
       reader.readAsDataURL(this.file as Blob);
     },
     async uploadImage() {
-      //if (this.file) {
-      //  await ImageService.uploadImage(this.file);
-      //  this.file = null;
-      //  // invoke close modal
-      //}
       console.log('invokde uplaod')
       const cropper = this.$refs.cropper as typeof Cropper;
       const cropperResult : CropperResult = cropper.getResult();
       const croppedData = cropperResult.canvas?.toDataURL();
       console.log(croppedData)
-      const file = await this.dataURLtoFile(croppedData!, "test_img.jpeg");
-      await ImageService.uploadImage(file);
+      const file = this.dataURLtoFile(croppedData!, "test_img.jpeg");
+      let resp: AxiosResponse
+      if (this.selectedImage?.imageID) {
+        resp = await ImageService.updateImage(file, this.selectedImage.imageID);
+      } else {
+        resp = await ImageService.uploadImage(file);
+      }
+      if (resp.status == 200) {
+        const dataUploaded = resp.data;
+        this.$emit('emitCloseUploadModal', (dataUploaded as RawUserImageData))
+      } else {
+        alert("upload image error")
+      }
+      this.file = null;
       
     },
     dataURLtoFile(dataURL: string, filename: string): File {

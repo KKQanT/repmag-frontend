@@ -64,6 +64,8 @@ export function arrayBufferToBase64(buffer: ArrayBuffer): string {
 }
 
 export function preprocessImgData(respData): string {
+  console.log("preprocessImgData invoked");
+  console.log(respData);
   const base64Flag = 'data:image/jpeg;base64,';
   const imgStr = arrayBufferToBase64(respData.data.data);
   return base64Flag + imgStr

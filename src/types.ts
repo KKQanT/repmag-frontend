@@ -61,10 +61,22 @@ interface Message {
     isRead: boolean
 }
 
-interface UserImage {
-    url: string,
-    order: number
+interface ImageUploadImage {
+    imageID: string|null
+    url: string|null,
+    order: number,
 }
+
+interface RawUserImageData {
+    data: Buffer,
+    imageID: string,
+    order: number,
+}
+
+enum UploadImageType {
+    add = "add",
+    update = "update"
+  }
 
 export {
     PageStatus,
@@ -75,5 +87,7 @@ export {
     MatchingStatus,
     type Message,
     type Location,
-    type UserImage
+    type ImageUploadImage,
+    type RawUserImageData,
+    UploadImageType
 };

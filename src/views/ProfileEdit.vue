@@ -1,14 +1,16 @@
 <script lang="ts">
 
 import { HtmlHTMLAttributes, PropType } from 'vue';
-import { GenderEnum, UserInfo, Location, UserImage } from '../types';
+import { GenderEnum, UserInfo, Location, ImageUploadImage, RawUserImageData, UploadImageType } from '../types';
 import { stringify } from 'querystring';
 import { calculateAge } from "../utils";
 import userServices from '../services/userServices';
 import { event } from 'jquery';
 import UserImagesPanel from '../components/UserImagesPanel.vue';
 import imageService from '../services/imageService';
-import {preprocessImgData} from "../utils";
+import { preprocessImgData } from "../utils";
+
+interface EmittedRefreshImage { dataUploaded: RawUserImageData, type: UploadImageType }
 
 export default {
   name: "ProfileEdit",
@@ -34,17 +36,7 @@ export default {
       interestedItem: "" as string,
       age: null as null | number,
       birthdateString: null as null | string,
-      userImages: [
-        { url: '/img2.png', order: 0 },
-        { url: '/img2.png', order: 1 },
-        { url: '/download.jpg', order: 2 },
-        { url: '/download.jpg', order: 3 },
-        { url: '/download.jpg', order: 4 },
-        { url: '/img1.png', order: 0 },
-        { url: '/img2.png', order: 1 },
-        { url: '/download.jpg', order: 2 },
-        { url: '/download.jpg', order: 3 },
-      ] as UserImage[],
+      userImages: [] as ImageUploadImage[],
       showModal: false as boolean,
       testImg: "/download.jpg" as string
     };
@@ -129,11 +121,91 @@ export default {
       this.interestedItem = target.value;
     },
     async queryImage() {
-      const resp = await imageService.queryImage("test.png");
-      const data = resp.data;
-      const img  = preprocessImgData(resp.data);
-      console.log("img", img)
-      this.testImg = img;
+      if (this.profileEditProps?.userID) {
+        const resp = await imageService.queryImage(this.profileEditProps?.userID);
+        const data: RawUserImageData[] = resp.data;
+        let sortedImages: ImageUploadImage[] = [];
+        if (data.length > 0) {
+          const userImages = data.map((item) => {
+            console.log("item: ", item)
+            return {
+              imageID: item.imageID,
+              url: preprocessImgData(item),
+              order: item.order,
+            }
+          });
+          sortedImages = userImages.sort((a, b) => a.order - b.order);
+          for (const item of sortedImages) {
+            this.userImages.push(item)
+          }
+        }
+        if (sortedImages.length < 9) {
+          this.userImages.push(
+            {
+              imageID: null,
+              url: null,
+              order: sortedImages.length,
+            }
+          )
+        }
+        console.log('this.userImages')
+        console.log(this.userImages)
+      } else {
+        console.log('no user ID')
+      }
+    },
+    handleEmittedRefreshImage(dataUploaded: RawUserImageData, mode: UploadImageType) {
+      this.userImages.pop();
+      const newRecord = {
+        imageID: dataUploaded.imageID,
+        url: preprocessImgData(dataUploaded),
+        order: dataUploaded.order
+      }
+      console.log("this.userImage: ", this.userImages);
+      console.log("newRecord: ", newRecord);
+      if (mode == UploadImageType.update) {
+        const index = this.userImages.findIndex((obj) => obj.imageID === newRecord.imageID);
+        if (index !== -1) {
+          this.userImages[index] = newRecord;
+        }
+      } else {
+        this.userImages.push(newRecord)
+      }
+      this.userImages.push(
+        {
+          imageID: null,
+          url: null,
+          order: this.userImages.length,
+        }
+      );
+      this.userImages = this.userImages.sort((a, b) => a.order - b.order)
+      console.log('handleEmittedRefreshImage invoked')
+      console.log(this.userImages)
+
+    },
+    handleEmittedDeleteImage(imageID: string) {
+      console.log("this.userImages before deleted");
+      console.log(this.userImages);
+      console.log("imageID:", imageID);
+      this.userImages.pop();
+      const index = this.userImages.findIndex((obj) => obj.imageID === imageID);
+      for (const obj of this.userImages) {
+        if (obj.order > this.userImages[index].order) {
+          obj.order -= 1
+        }
+      }
+
+      if (index !== -1) {
+        this.userImages.splice(index, 1);
+      }
+
+      console.log("this.userImages after deleted")
+      console.log(this.userImages)
+      this.userImages.push({
+        imageID: null,
+        url: null,
+        order: this.userImages.length,
+      })
     }
   },
   mounted() {
@@ -162,7 +234,7 @@ export default {
             <div class="d-flex justify-content-center align-items-center">
               <div class="profile-image">
                 <img class="card-img-top mb-3" :src="testImg" alt="Profile Image">
-                <div class="image-overlay" @click="showModal=!showModal">
+                <div class="image-overlay" @click="showModal = !showModal">
                   Upload new image
                 </div>
               </div>
@@ -263,22 +335,24 @@ export default {
     </div>
   </div>
   <div class="modal" :class="{ 'show': showModal }">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Your uploaded images</h5>
-            <button type="button" class="close" @click="showModal=false">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Your uploaded images</h5>
+          <button type="button" class="close" @click="showModal = false">
             <span>&times;</span>
           </button>
-          </div>
-          <div class="modal-body">
-            <div class="container">
-              <UserImagesPanel :user-images="userImages"/>
-            </div>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <UserImagesPanel :user-images="userImages"
+              @emitRefreshImage="(value: EmittedRefreshImage) => handleEmittedRefreshImage(value.dataUploaded, value.type)"
+              @emitDeleteImage="(imageID: string) => handleEmittedDeleteImage(imageID)" />
           </div>
         </div>
       </div>
     </div>
+  </div>
 </template>
 
 <style scoped>

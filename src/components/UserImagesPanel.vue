@@ -1,8 +1,9 @@
 <script lang="ts">
-import { PropType, ref } from 'vue';
+import { PropType } from 'vue';
 import ImageService from '../services/imageService';
 import UploadImageModal from './UploadImageModal.vue';
-import { UserImage } from "../types"
+import { ImageUploadImage, RawUserImageData, UploadImageType } from "../types";
+
 export default {
   name: "UserImagesPanel",
   components: {
@@ -10,73 +11,71 @@ export default {
   },
   props: {
     userImages: {
-      type: Array as PropType<UserImage[]>,
+      type: Array as PropType<ImageUploadImage[]>,
       required: true
     }
   },
-  setup(props) {
-    const images = ref<UserImage[]>(props.userImages);
-    const showUploadModal = ref<boolean>(false);
-    const selectedImageIndex = ref<number | null>(null);
-
-    const handleImageClick = (index: number) => {
-      selectedImageIndex.value = index;
-      showUploadModal.value = true;
-    };
-
-    const closeUploadModal = () => {
-      if (
-        selectedImageIndex.value !== null
-        && images.value[selectedImageIndex.value].url
-      ) {
-        images.value[selectedImageIndex.value].url = "" //to do add image url
-      }
-      selectedImageIndex.value = null;
-      showUploadModal.value = false;
-    };
-
+  data() {
     return {
-      images,
-      showUploadModal,
-      selectedImageIndex,
-      handleImageClick,
-      closeUploadModal
+      images: this.userImages,
+      showUploadModal: false,
+      selectedImage: null as null | ImageUploadImage,
+      uploadType: UploadImageType.add as UploadImageType
+    };
+  },
+  methods: {
+    handleImageClick(image: ImageUploadImage) {
+      this.selectedImage = image;
+      if (image.url) {
+        this.uploadType = UploadImageType.add
+      } else {
+        this.uploadType = UploadImageType.update
+      }
+      console.log('this.selectedImage');
+      console.log(this.selectedImage);
+      this.showUploadModal = true;
+      console.log('images array');
+      console.log(this.images);
+    },
+    closeAndAddImage(dataUploaded: RawUserImageData) {
+      if (this.selectedImage?.imageID) {
+        this.$emit('emitRefreshImage', {dataUploaded: dataUploaded, type: "update"});
+      } else {
+        this.$emit('emitRefreshImage', {dataUploaded: dataUploaded, type: "add"});
+      }
+      this.selectedImage = null;
+      this.showUploadModal = false;
+    },
+    async deleteImage(imageID) {
+      await ImageService.deleteImage(imageID);
+      this.$emit('emitDeleteImage', imageID);
+      this.selectedImage = null;
+      this.showUploadModal = false;
     }
   }
-}
+};
 </script>
 
 <template>
   <div class="main-modal">
     <h2>Image Gallery</h2>
     <div class="image-container">
-      <div v-for="(image, index) in images" :key="index" class="image-item" @click="handleImageClick(index)">
-        <button type="button" class="close">
+      <div v-for="(image, index) in images" :key="index" class="image-item">
+        <button type="button" class="close" v-if="image.url != null" @click="deleteImage(image.imageID!)">
           <span>&times;</span>
         </button>
-        <div class="image-wrapper">
+        <div class="image-wrapper" @click="handleImageClick(image)">
           <img :src="image.url" v-if="image.url" />
           <div v-else class="upload-placeholder">
-            click to upload
+            <img :src="'Placeholder_view_vector.png'"/>
           </div>
-          <div class="image-overlay"></div>
+          <div class="image-overlay">
+            <img class="upload-icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABW0lEQVR4nO2VX0rDQBCH81JfFF988wgWqS/WCoI38Gb963H64h1sL2C9gFUwYuGT0V9gDdsk3W41hfxgIZvMZL7JzGSTpFGjOok/Uv0Bkh1p/wCI/Mn3FyAJVANADUpwAtz8G0BewC3wsFMAoA0MgRnwpjXTvXaZczAAcADcAyvWy55NzDYqAD/BpzJ/B0ZAFzjUugLGQCqbqReCcADL3PQEnBfYdYCFbCdRAFTzlTL/FdznL4hUPmeVANboTjbWXKZhWULOfesD02AbgFPZzLW/3ADAesL0WMmhSMCr3I4qQH+/22y1XcYAWAYAHGv74gWoIscnK0HXA+dNCOgVlqCKHJ+sCccbAGRj20+2lTOGNlqdMgDgAvjwjmGonLFa5CE8wZ9lOwoO6Hlxy/kVpwLqqdttXeuzW+bIthUNQBB2HljgosPoU+dE3OA5EOuJgXW4/hG27Lrvq/kXy6SVhuwJjUkAAAAASUVORK5CYII=">
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <!--div class="modal" :class="{ 'show': showUploadModal }">
-    <div class="card-md">
-      <div class="card-header">
-        <h5 class="card-title">Your uploaded images</h5>
-        <button type="button" class="close" @click="showUploadModal = false">
-          <span>&times;</span>
-        </button>
-        <div class="card-content">
-          <UploadImageModal />
-        </div>
-      </div>
-    </div>
-  </div-->
   <div class="modal" tabindex="-1" role="dialog" :class="{ 'show': showUploadModal }">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -87,7 +86,9 @@ export default {
         </button>
       </div>
       <div class="modal-body">
-        <UploadImageModal />
+        <UploadImageModal
+        :selectedImage="selectedImage"
+        @emitCloseUploadModal = "(value: RawUserImageData) => closeAndAddImage(value)" />
       </div>
     </div>
   </div>
@@ -95,6 +96,11 @@ export default {
 </template>
 
 <style>
+
+.upload-icon {
+  max-width: 20%;
+}
+
 .modal.show {
   display: block;
 }
@@ -132,23 +138,19 @@ export default {
   opacity: 1;
 }
 
+.image-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .upload-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  background-color: #f5f5f5;
-  color: #888;
-  font-size: 14px;
+  position: relative;
+  background-color: lightgray;
 }
 
 .upload-placeholder:hover {
   cursor: pointer;
 }
 
-.image-item img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
 </style>
