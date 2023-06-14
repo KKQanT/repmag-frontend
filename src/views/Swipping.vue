@@ -87,11 +87,9 @@ export default {
 </script>
 
 <template>
-  <!--to do solve 4 4 1 issue-->
-
   <div class="container justify-content-center align-items-center d-flex">
     <div class="card-list mt-3">
-      <div class="card" v-for="partner in recommendedUsersProps" :key="partner.userID" @click="() => openCard(partner)">
+      <div class="card upper-slide-hover" v-for="partner in recommendedUsersProps" :key="partner.userID" @click="() => openCard(partner)">
         <img src="/download.jpg" alt="partner img" class="img-fluid">
         <div class="card-body">
           <h5 class="card-title">{{ partner.name }}</h5>
@@ -139,6 +137,14 @@ export default {
   border: 1px solid #ccc;
   border-radius: 10px;
   margin-bottom: 20px;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.upper-slide-hover:hover {
+  transform: translateY(-5px);
+  transition: transform 0.2s ease-in-out;
 }
 
 .profile-image {

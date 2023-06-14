@@ -42,7 +42,6 @@ export default {
         university: null,
         occupation: null,
         company: null,
-        userImages: [],
         bio: null,
         location: {
           city: null,
@@ -124,7 +123,6 @@ export default {
             occupation: userData.occupation,
             company: userData.company,
             university: userData.university,
-            userImages: userData.userImages,
             bio: userData.bio,
             location: userData.location,
             interestedIn: userData.interestedIn
@@ -167,7 +165,8 @@ export default {
     async getRecommendedUsers() {
       const resp = await userServices.getRecomendedUsers();
       if (resp.status === 200) {
-        this.recommendsUsers = resp.data
+        this.recommendsUsers = [...resp.data, ...resp.data, ...resp.data, ...resp.data,
+        ...resp.data, ...resp.data, ...resp.data, ...resp.data]
       }
     },
 
@@ -322,7 +321,8 @@ export default {
     <div class="p-3 m-5 text-center">
       <h1>Tell your partner about yourself</h1>
     </div>
-    <ProfileEdit @emittedSwitchPage="(_value) => switchPage('swipping')" :profile-edit-props="userInfo" :is-first="true"/>
+    <ProfileEdit @emittedSwitchPage="(_value) => switchPage('swipping')" :profile-edit-props="userInfo"
+      :is-first="true" />
   </div>
   <div v-else>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
