@@ -116,7 +116,7 @@ export default {
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Detailed Info</h5>
-          <button type="button" class="close" @click="closeCard">
+          <button type="button" class="btn btn-secondary btn-close" @click="closeCard">
             <span>&times;</span>
           </button>
         </div>
@@ -257,6 +257,11 @@ export default {
 
 .btn-pass {
   background-color: #ff6861;
+  color: #fff;
+}
+
+.btn-close {
+  background-color: lightgray;
   color: #fff;
 }
 </style>
