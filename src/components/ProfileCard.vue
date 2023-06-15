@@ -74,7 +74,7 @@ export default {
   </div>
 </template>
 
-<style>
+<style scoped>
 .profile-image {
   position: relative;
   width: 300px;

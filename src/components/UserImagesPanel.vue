@@ -95,7 +95,7 @@ export default {
 </div>
 </template>
 
-<style>
+<style scoped>
 
 .upload-icon {
   max-width: 20%;

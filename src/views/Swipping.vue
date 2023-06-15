@@ -89,15 +89,18 @@ export default {
 <template>
   <div class="container justify-content-center align-items-center d-flex">
     <div class="card-list mt-3">
-      <div class="card-sm box-shadow upper-slide-hover" v-for="partner in recommendedUsersProps" :key="partner.userID"
+      <div class="card-md box-shadow upper-slide-hover" v-for="partner in recommendedUsersProps" :key="partner.userID"
         @click="() => openCard(partner)">
-        <img src="/download.jpg" alt="partner img" class="img-fluid">
-        <div class="card-body">
+        <div class="profile-image">
+        <img src="/download.jpg" alt="partner img">
+      </div>
+        <div class="card-body mt-3">
           <h5 class="card-title">{{ partner.name }}</h5>
           <p>
             {{ partner.occupation ? partner.occupation : "-" }}<br>
             {{ partner.university ? partner.university : "-" }} <br>
-            {{ `age: ${getAndParseAge(partner)}` }} {{ "location: " + getLocation(partner) }}
+            {{ `age: ${getAndParseAge(partner)}` }} <br> 
+            {{ "location: " + getLocation(partner) }}
           </p>
           <div class="button-group">
             <button class="btn btn-danger btn-pass">
@@ -131,30 +134,32 @@ export default {
 </template>
 
 <style scoped>
+
+.profile-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .card-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
-  width: 1500px;
+  width: 1000px;
 }
 
-.card-sm {
+
+.card-md {
   flex: 0 0 calc(25% - 20px);
   /*100 1  50 2  30 3  25 4*/
   /* Adjust the width as needed */
+  
 }
 
 .upper-slide-hover:hover {
   transform: translateY(-5px);
   transition: transform 0.2s ease-in-out;
-  cursor: pointer;
-}
-
-.profile-image {
-  position: relative;
-  height: 600px;
-  overflow: hidden;
   cursor: pointer;
 }
 
@@ -256,14 +261,14 @@ export default {
 @media (max-width: 1000px) {
 
 
-  .card-sm {
+  .card-md {
     flex: 0 0 calc(50% - 20px);
   }
 }
 
 @media (max-width: 500px) {
 
-  .card-sm {
+  .card-md {
     flex: 0 0 calc(100% - 20px);
   }
 }
