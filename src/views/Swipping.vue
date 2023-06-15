@@ -75,8 +75,8 @@ export default {
     getLocation(partner: UserInfo) {
       if (partner.location) {
         console.log(partner.location)
-        const city =  partner.location.city ? partner.location.city : "-" 
-        const country =  partner.location.country ? partner.location.country : "-"
+        const city = partner.location.city ? partner.location.city : "-"
+        const country = partner.location.country ? partner.location.country : "-"
         return city + ', ' + country
       } else {
         return "-, -"
@@ -89,15 +89,24 @@ export default {
 <template>
   <div class="container justify-content-center align-items-center d-flex">
     <div class="card-list mt-3">
-      <div class="card upper-slide-hover" v-for="partner in recommendedUsersProps" :key="partner.userID" @click="() => openCard(partner)">
+      <div class="card upper-slide-hover" v-for="partner in recommendedUsersProps" :key="partner.userID"
+        @click="() => openCard(partner)">
         <img src="/download.jpg" alt="partner img" class="img-fluid">
         <div class="card-body">
           <h5 class="card-title">{{ partner.name }}</h5>
           <p>
-            {{ partner.occupation ? partner.occupation : "-"}}<br>
+            {{ partner.occupation ? partner.occupation : "-" }}<br>
             {{ partner.university ? partner.university : "-" }} <br>
             {{ `age: ${getAndParseAge(partner)}` }} {{ "location: " + getLocation(partner) }}
           </p>
+          <div class="button-group">
+            <button class="btn btn-danger btn-pass">
+              Pass
+            </button>
+            <button class="btn btn-primary btn-like">
+              Like
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -145,6 +154,7 @@ export default {
 .upper-slide-hover:hover {
   transform: translateY(-5px);
   transition: transform 0.2s ease-in-out;
+  cursor: pointer;
 }
 
 .profile-image {
@@ -225,5 +235,28 @@ export default {
   border-top: 1px solid #e9ecef;
   border-bottom-right-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.btn-like,
+.btn-pass {
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.btn-like {
+  background-color: #55acee;
+  color: #fff;
+}
+
+.btn-pass {
+  background-color: #ff6861;
+  color: #fff;
 }
 </style>
