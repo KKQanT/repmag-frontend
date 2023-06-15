@@ -48,7 +48,7 @@ export default {
         <div class="profile-image">
           <img class="card-img-top mb-5" src="/download.jpg" alt="Profile Image">
           <div class="image-overlay mb-5">
-            show all images
+            Show all images
           </div>
         </div>
       </div>
@@ -60,18 +60,21 @@ export default {
       <h9 class="card-title">{{ age ? 'age: ' + age?.toString() : '' }}{{ userInfo?.location.city ? ', ' + parseInfo(userInfo.location.city) : '' }}{{
         userInfo?.location.country ? ', ' + parseInfo(userInfo?.location.country) : '' }}</h9>
       <p class="card-text mt-3">{{ parseInfo(userInfo?.bio) }}</p>
-      <h9 class="card-title" v-if="(userInfo) && (userInfo.interestedIn.length > 0)">interested in:</h9>
+      <h9 class="card-title" v-if="(userInfo) && (userInfo.interestedIn.length > 0)">Interested in:</h9>
       <ul class="interested-in">
         <li v-for="item in userInfo?.interestedIn" :key="item" class="list-card">
           {{ item }}
         </li>
       </ul>
     </div>
+    <div class="button-group-wrapper">
+      <button class="btn btn-lg btn-danger" >Pass</button>
+      <button class="btn btn-lg btn-success mr-2">Like</button>
+    </div>
   </div>
 </template>
 
 <style>
-
 .profile-image {
   position: relative;
   width: 300px;
@@ -147,7 +150,35 @@ li {
 .list-card {
   position: relative;
   background-color: hsl(0, 0%, 91%);
-  padding: 5px 20px 5px 20px
+  padding: 5px 20px 5px 20px;
+}
+
+.btn {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 30px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: #ffffff;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: #ffffff;
+}
+
+.button-group-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-self: center;
+  width: 50%;
 }
 
 </style>
