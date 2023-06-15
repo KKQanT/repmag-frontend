@@ -89,7 +89,7 @@ export default {
 <template>
   <div class="container justify-content-center align-items-center d-flex">
     <div class="card-list mt-3">
-      <div class="card upper-slide-hover" v-for="partner in recommendedUsersProps" :key="partner.userID"
+      <div class="card-sm box-shadow upper-slide-hover" v-for="partner in recommendedUsersProps" :key="partner.userID"
         @click="() => openCard(partner)">
         <img src="/download.jpg" alt="partner img" class="img-fluid">
         <div class="card-body">
@@ -139,16 +139,10 @@ export default {
   width: 1500px;
 }
 
-.card {
+.card-sm {
   flex: 0 0 calc(25% - 20px);
   /*100 1  50 2  30 3  25 4*/
   /* Adjust the width as needed */
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  background-color: #fff;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .upper-slide-hover:hover {
@@ -162,12 +156,6 @@ export default {
   height: 600px;
   overflow: hidden;
   cursor: pointer;
-}
-
-@media (max-width: 768px) {
-  .card {
-    flex: 0 0 calc(50% - 20px);
-  }
 }
 
 /*since bootraps modal is not working so this section is needed*/
@@ -263,5 +251,20 @@ export default {
 .btn-close {
   background-color: lightgray;
   color: #fff;
+}
+
+@media (max-width: 1000px) {
+
+
+  .card-sm {
+    flex: 0 0 calc(50% - 20px);
+  }
+}
+
+@media (max-width: 500px) {
+
+  .card-sm {
+    flex: 0 0 calc(100% - 20px);
+  }
 }
 </style>
