@@ -1,6 +1,6 @@
 <script lang="ts">
-import {  PropType } from 'vue';
-import {  UserInfo } from '../types';
+import { PropType } from 'vue';
+import { UserInfo } from '../types';
 import { calculateAge } from '../utils';
 
 export default {
@@ -29,20 +29,27 @@ export default {
       return info ? info : "-"
     },
 
-    getAge(birthdate: Date|null|undefined) {
+    getAge(birthdate: Date | null | undefined) {
       if (birthdate) {
         return calculateAge(birthdate)!.toString()
       } else {
         return ""
       }
+    },
+
+    handleClose() {
+      this.$emit('emitClose')
     }
   },
 
 };
 </script>
 
-<template v-show="errors">
-  <div class="card shadow-none border-0">
+<template>
+  <div class="card-sm box-shadow border-0">
+    <div class="d-flex flex-row-reverse bd-highlight">
+      <button type="button" class="btn-close p-2" aria-label="Close" @click = handleClose></button>
+    </div>
     <div class="card-body">
       <div class="d-flex justify-content-center align-items-center">
         <div class="profile-image">
@@ -52,13 +59,34 @@ export default {
           </div>
         </div>
       </div>
-      <h4 class="card-title">{{ parseInfo(userInfo?.name) }}</h4>
-      <h7 class="card-title">{{ parseInfo(userInfo?.occupation) }}{{ userInfo?.company ? ', ' + parseInfo(userInfo?.company) : '' }}</h7>
+      <div class="title-container">
+        <div class="d-flex justify-content-center align-items-center">
+          <h4 class="card-title">{{ parseInfo(userInfo?.name) }}
+          </h4>
+        </div>
+        <div class="btn-toolbar">
+          <button class="btn btn-danger btn-pass mx-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor"
+              width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+          <button class="btn btn-primary btn-like">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-heart-fill"
+              viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <h7 class="card-title">{{ parseInfo(userInfo?.occupation) }}{{ userInfo?.company ? ', ' +
+        parseInfo(userInfo?.company) : '' }}</h7>
       <br>
       <h7 class="card-title">{{ parseInfo(userInfo?.university) }}</h7>
       <br>
-      <h9 class="card-title">{{ age ? 'age: ' + age?.toString() : '' }}{{ userInfo?.location.city ? ', ' + parseInfo(userInfo.location.city) : '' }}{{
-        userInfo?.location.country ? ', ' + parseInfo(userInfo?.location.country) : '' }}</h9>
+      <h9 class="card-title">{{ age ? 'age: ' + age?.toString() : '' }}{{ userInfo?.location.city ? ', ' +
+        parseInfo(userInfo.location.city) : '' }}{{
+    userInfo?.location.country ? ', ' + parseInfo(userInfo?.location.country) : '' }}</h9>
       <p class="card-text mt-3">{{ parseInfo(userInfo?.bio) }}</p>
       <h9 class="card-title" v-if="(userInfo) && (userInfo.interestedIn.length > 0)">Interested in:</h9>
       <ul class="interested-in">
@@ -67,14 +95,22 @@ export default {
         </li>
       </ul>
     </div>
-    <div class="button-group-wrapper">
-      <button class="btn btn-lg btn-danger" >Pass</button>
-      <button class="btn btn-lg btn-success mr-2">Like</button>
-    </div>
   </div>
 </template>
 
 <style scoped>
+.title-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.button-group {
+  background-color: #dc3545;
+}
+
+
 .profile-image {
   position: relative;
   width: 300px;
@@ -109,29 +145,6 @@ img {
   opacity: 1;
 }
 
-.close {
-  float: right;
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1;
-  color: #000;
-  text-shadow: 0 1px 0 #fff;
-  opacity: 0.5;
-}
-
-.close:hover {
-  color: #000;
-  text-decoration: none;
-  opacity: 0.75;
-}
-
-.close:focus,
-.close:hover {
-  color: #000;
-  text-decoration: none;
-  opacity: 0.75;
-  outline: 0;
-}
 
 .interested-in {
   display: flex;
@@ -153,32 +166,13 @@ li {
   padding: 5px 20px 5px 20px;
 }
 
-.btn {
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 12px 24px;
-  border-radius: 30px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.btn-like {
+  background-color: #55acee;
+  color: #fff;
 }
 
-.btn-success {
-  background-color: #28a745;
-  border-color: #28a745;
-  color: #ffffff;
+.btn-pass {
+  background-color: #ff6861;
+  color: #fff;
 }
-
-.btn-danger {
-  background-color: #dc3545;
-  border-color: #dc3545;
-  color: #ffffff;
-}
-
-.button-group-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-self: center;
-  width: 50%;
-}
-
 </style>

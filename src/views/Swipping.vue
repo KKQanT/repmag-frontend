@@ -92,22 +92,28 @@ export default {
       <div class="card-md box-shadow upper-slide-hover" v-for="partner in recommendedUsersProps" :key="partner.userID"
         @click="() => openCard(partner)">
         <div class="profile-image">
-        <img src="/download.jpg" alt="partner img">
-      </div>
+          <img src="/download.jpg" alt="partner img">
+        </div>
         <div class="card-body mt-3">
           <h5 class="card-title">{{ partner.name }}</h5>
           <p>
             {{ partner.occupation ? partner.occupation : "-" }}<br>
             {{ partner.university ? partner.university : "-" }} <br>
-            {{ `age: ${getAndParseAge(partner)}` }} <br> 
+            {{ `age: ${getAndParseAge(partner)}` }} <br>
             {{ "location: " + getLocation(partner) }}
           </p>
           <div class="button-group">
             <button class="btn btn-danger btn-pass">
-              Pass
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor"
+                width="24" height="24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
             </button>
             <button class="btn btn-primary btn-like">
-              Like
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-heart-fill"
+                viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+              </svg>
             </button>
           </div>
         </div>
@@ -115,18 +121,10 @@ export default {
     </div>
   </div>
   <div class="modal" :class="{ 'show': showModal }">
-    <div class="modal-dialog modal-md">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Detailed Info</h5>
-          <button type="button" class="btn btn-secondary btn-close" @click="closeCard">
-            <span>&times;</span>
-          </button>
-        </div>
+    <div class="modal-dialog">
+      <div class="modal-content border-0">
         <div class="modal-body">
-          <div class="container">
-            <ProfileCard :user-info="selectedPartner!" :age="age" />
-          </div>
+          <ProfileCard :user-info="selectedPartner!" :age="age" @emitClose="(_value) => showModal = false" />
         </div>
       </div>
     </div>
@@ -134,6 +132,12 @@ export default {
 </template>
 
 <style scoped>
+/*since bootraps modal is not working so this section is needed*/
+
+.modal.show {
+  display: block;
+}
+
 
 .profile-image {
   display: flex;
@@ -154,7 +158,7 @@ export default {
   flex: 0 0 calc(25% - 20px);
   /*100 1  50 2  30 3  25 4*/
   /* Adjust the width as needed */
-  
+
 }
 
 .upper-slide-hover:hover {
@@ -163,72 +167,6 @@ export default {
   cursor: pointer;
 }
 
-/*since bootraps modal is not working so this section is needed*/
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1050;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  outline: 0;
-}
-
-.modal.show {
-  display: block;
-}
-
-.modal-dialog {
-  position: relative;
-  width: auto;
-  margin: 0.5rem auto;
-  /* Updated: Set left and right margins to auto */
-  pointer-events: none;
-}
-
-.modal-content {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  pointer-events: auto;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 0.25rem;
-  outline: 0;
-}
-
-.modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px solid #e9ecef;
-  border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.25rem;
-}
-
-.modal-title {
-  margin-bottom: 0;
-}
-
-.modal-body {
-  position: relative;
-  flex: 1 1 auto;
-  padding: 1rem;
-}
-
-.modal-footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  padding: 0.75rem;
-  border-top: 1px solid #e9ecef;
-  border-bottom-right-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
-}
 
 .button-group {
   display: flex;
@@ -239,7 +177,6 @@ export default {
 .btn-like,
 .btn-pass {
   font-weight: bold;
-  text-transform: uppercase;
   cursor: pointer;
 }
 
@@ -250,11 +187,6 @@ export default {
 
 .btn-pass {
   background-color: #ff6861;
-  color: #fff;
-}
-
-.btn-close {
-  background-color: lightgray;
   color: #fff;
 }
 
