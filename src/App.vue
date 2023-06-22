@@ -56,7 +56,8 @@ export default {
       inMemoryCacheChat: new Map<string, Message[]>(),
       countUnreads: new Map<string, number>(),
       recentMessages: new Map<string, string>(),
-      profilePicture: "/download.jpg"
+      profilePicture: "/download.jpg",
+      visible: false
     }
   },
 
@@ -325,10 +326,11 @@ export default {
       :is-first="true" />
   </div>
   <div v-else>
+    <!--https://stackoverflow.com/questions/72299785/bootstrap-5-navbar-not-toggling-in-vue3-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand ms-3" href="#">Your Logo</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <a class="navbar-brand ms-3 logo" href="#">Your Logo</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+        aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -367,5 +369,15 @@ export default {
 .profile-picture {
   width: 60px;
   height: 60px;
+}
+
+.logo {
+  display: inline;
+}
+
+@media (max-width: 991px) {
+  .logo {
+    display: none;
+  }
 }
 </style>

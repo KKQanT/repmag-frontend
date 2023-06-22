@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getBearerToken } from "../utils";
 
-const BASE_API  = "http://localhost:4000"
+const BASE_API  = import.meta.env.VITE_APP_BASE_API
 
 class chatServices {
     getChatHistory(partnerUserID: string) {

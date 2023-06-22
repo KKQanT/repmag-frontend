@@ -2,7 +2,7 @@ import axios from "axios";
 import { GenderEnum, Location } from "../types";
 import { getBearerToken } from "../utils";
 
-const BASE_API  = "http://localhost:4000"
+const BASE_API  = import.meta.env.VITE_APP_BASE_API
 
 class userServices {
     signUp(email:string, password:string) {
@@ -16,6 +16,12 @@ class userServices {
         return axios.post(BASE_API + "/auth/login", {
             email: email,
             password: password
+        });
+    }
+
+    googleLogin(googleToken: string) {
+        return axios.post(BASE_API + "/auth/google_login", {
+            googleToken: googleToken
         });
     }
 

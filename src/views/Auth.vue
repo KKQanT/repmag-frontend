@@ -3,6 +3,15 @@
 import userServices from '../services/userServices'
 import { createToast } from 'mosha-vue-toastify';
 import { notifyError } from "./../utils";
+import { GoogleLogin } from 'vue3-google-login';
+
+interface CredentialPopupResponse {
+  clientId: string;
+  /** JWT credential string */
+  credential: string;
+  /** This field shows how the credential is selected */
+  select_by: "auto" | "user" | "user_1tap" | "user_2tap" | "btn" | "btn_confirm" | "brn_add_session" | "btn_confirm_add_session";
+}
 
 export default {
   name: "Auth",
@@ -51,13 +60,26 @@ export default {
       this.loginLoading = true
       const resp = await userServices.login(this.email, this.password);
       if (resp.status === 200) {
-        const bearerToken = resp.data.bearerToken;
-        window.localStorage.setItem("bearerToken", bearerToken);
-        this.$emit("emittedLoggedIn", true);
+        this.setBearerToken(resp.data.bearerToken);
       } else {
         notifyError(resp)
       }
       this.loginLoading = false
+    },
+
+    async onGoogleLogin(response: CredentialPopupResponse) {
+      const credential = response.credential;
+      const resp = await userServices.googleLogin(credential);
+      if (resp.status === 200) {
+        this.setBearerToken(resp.data.bearerToken);
+      } else {
+        notifyError(resp)
+      }
+    },
+
+    setBearerToken(bearerToken: string) {
+      window.localStorage.setItem("bearerToken", bearerToken);
+      this.$emit("emittedLoggedIn", true);
     },
 
     viewPassword() {
@@ -97,7 +119,8 @@ export default {
                   <font-awesome-icon :icon="['fas', 'eye-slash']" />
                 </i>
               </div>
-              <input v-model="password" class="form-control" :type="hidePassword ? 'password' : 'text'" v-on:keyup.enter="onLogin">
+              <input v-model="password" class="form-control" :type="hidePassword ? 'password' : 'text'"
+                v-on:keyup.enter="onLogin">
             </div>
             <button v-if="loginLoading" class="btn btn-primary w-100" type="button" disabled>
               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -107,6 +130,15 @@ export default {
             <div class="mt-3 text-center">
               <a>Don't have an account?</a><br>
               <a href="#" @click="onOpenSignup">Create account</a>
+            </div>
+            <div class="mt-3 text-center">
+              or
+            </div>
+            <div class="mt-3 text-center">
+              <GoogleLogin :callback="onGoogleLogin" />
+            </div>
+            <div>
+
             </div>
           </div>
         </div>
@@ -152,7 +184,7 @@ export default {
             <input v-model="confirmPassword" class="form-control" :type="hidePassword ? 'password' : 'text'">
           </div>
           <div class="justify-content-center align-items-center d-flex">
-            <button class="btn btn-primary w-50" @click="onSignUp">Sing Up</button>
+            <button class="btn btn-primary w-50" @click="onSignUp">Sign Up</button>
           </div>
         </div>
       </div>
